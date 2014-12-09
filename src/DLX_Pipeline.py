@@ -14,6 +14,7 @@
 #   22.11.2014  -   add functionality of EX including ALU calls and Condition checking
 import sys
 sys.path.append('./src')
+import logging
 from DLX_Register import *
 
 
