@@ -15,6 +15,7 @@
 import sys
 sys.path.append('./src')
 import logging
+import inspect
 from DLX_Register import *
 
 
@@ -22,6 +23,8 @@ class DLX_Pipeline:
     def __init__(self, storage, alu, regbank):        
         self.stages = ['IF','ID','EX','MEM','WB']
         self.piperegs = ['PC','NPC','IR','A','B','Imm','Cond','AO','LMD']
+        mylogger.info("Pipeline Stages: %s",self.stages)
+		mylogger.info("Pipeline Registers: %s",self.piperegs)
         self.__insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
         self.storage = storage
         self.alu = alu
@@ -348,6 +351,9 @@ class DLX_Pipeline:
             self.regbank.getRegByID(__rd).setVal( self.LMD.getVal() )
 
     def doPipeNext(self):
+		mylogger.debug("Function: %s",(inspect.stack()[0][3]))
+		mylogger.debug("PC:       %d",self.PC.getVal().uint)
+		mylogger.debug("Instruction FIFO: [0] %d, [1] %d, [2] %d, [3] %d, [4] %d", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         self.WB()
         self.doMEM()
         self.doEX()
