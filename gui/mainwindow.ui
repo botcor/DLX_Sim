@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuDLX_Sim_MainWindow">
+    <property name="title">
+     <string>DLX_Sim</string>
+    </property>
+    <addaction name="actionProgramm_laden"/>
+    <addaction name="actionReset_DLX"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionProgram"/>
+    <addaction name="actionPipeline"/>
+    <addaction name="actionMemory"/>
+    <addaction name="actionRegisters"/>
+    <addaction name="actionStatistics"/>
+   </widget>
+   <widget class="QMenu" name="menuSimulator">
+    <property name="title">
+     <string>Simulator</string>
+    </property>
+    <addaction name="actionNext_Step"/>
+    <addaction name="actionMore_Steps"/>
+    <addaction name="actionRun"/>
+   </widget>
+   <widget class="QMenu" name="menuPipeline">
+    <property name="title">
+     <string>DLX</string>
+    </property>
+    <addaction name="actionForwarding"/>
+    <addaction name="actionMemory_Size"/>
+   </widget>
+   <addaction name="menuDLX_Sim_MainWindow"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuSimulator"/>
+   <addaction name="menuPipeline"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="DW1">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="DW1_Contents"/>
+  </widget>
+  <action name="actionProgramm_laden">
+   <property name="text">
+    <string>Load Program</string>
+   </property>
+  </action>
+  <action name="actionReset_DLX">
+   <property name="text">
+    <string>Reset DLX</string>
+   </property>
+  </action>
+  <action name="actionProgram">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Program</string>
+   </property>
+  </action>
+  <action name="actionPipeline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Pipeline</string>
+   </property>
+  </action>
+  <action name="actionMemory">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Memory</string>
+   </property>
+  </action>
+  <action name="actionRegisters">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Registers</string>
+   </property>
+  </action>
+  <action name="actionNext_Step">
+   <property name="text">
+    <string>Next Step</string>
+   </property>
+  </action>
+  <action name="actionMore_Steps">
+   <property name="text">
+    <string>More Steps</string>
+   </property>
+  </action>
+  <action name="actionRun">
+   <property name="text">
+    <string>Run</string>
+   </property>
+  </action>
+  <action name="actionForwarding">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Forwarding</string>
+   </property>
+  </action>
+  <action name="actionMemory_Size">
+   <property name="text">
+    <string>Memory Size</string>
+   </property>
+  </action>
+  <action name="actionStatistics">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Statistics</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
