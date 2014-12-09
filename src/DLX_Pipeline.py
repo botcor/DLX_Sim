@@ -114,85 +114,85 @@ class DLX_Pipeline:
         if ( __OP.uint == 0x00 ):
             # R-Type
             # func is stored in the Register Imm
-            if (self.Imm == 0x20):
+            if (self.Imm.getVal().uint == 0x20):
                 #ADD
-                self.AO.setVal( self.alu.ADD(self.A, self.B) )
-            elif (self.Imm == 0x21):
+                self.AO.setVal( self.alu.ADD(self.A.getVal(), self.B.getVal() ) )
+            elif (self.Imm.getVal().uint == 0x21):
                 #ADDU
-                self.AO.setVal( self.alu.ADDU(self.A, self.B) )
-            elif (self.Imm == 0x22):
+                self.AO.setVal( self.alu.ADDU(self.A.getVal(), self.B.getVal() ) )
+            elif (self.Imm.getVal().uint == 0x22):
                 #SUB
-                self.AO.setVal( self.alu.SUB(self.A, self.B) )
-            elif (self.Imm == 0x23):
+                self.AO.setVal( self.alu.SUB(self.A.getVal(), self.B.getVal() ) )
+            elif (self.Imm.getVal().uint == 0x23):
                 #SUBU
-                self.AO.setVal( self.alu.SUBU(self.A, self.B) )
-            elif (self.Imm == 0x24):
+                self.AO.setVal( self.alu.SUBU(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x24):
                 #AND
-                self.AO.setVal( self.alu.AND(self.A, self.B) )
-            elif (self.Imm == 0x25):
+                self.AO.setVal( self.alu.AND(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x25):
                 #OR
-                self.AO.setVal( self.alu.OR(self.A, self.B) )
-            elif (self.Imm == 0x26):
+                self.AO.setVal( self.alu.OR(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x26):
                 #XOR
-                self.AO.setVal( self.alu.XOR(self.A, self.B) )
-            elif (self.Imm == 0x04):
+                self.AO.setVal( self.alu.XOR(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x04):
                 #SLL
-                self.AO.setVal( self.alu.SLL(self.A, self.B) )
-            elif (self.Imm == 0x04):
+                self.AO.setVal( self.alu.SLL(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x04):
                 #SLL
-                self.AO.setVal( self.alu.SLL(self.A, self.B) )
-            elif (self.Imm == 0x07):
+                self.AO.setVal( self.alu.SLL(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x07):
                 #SRA
-                self.AO.setVal( self.alu.SRA(self.A, self.B) )
-            elif (self.Imm == 0x06):
+                self.AO.setVal( self.alu.SRA(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x06):
                 #SRL
-                self.AO.setVal( self.alu.SRL(self.A, self.B) )
-            elif (self.Imm == 0x10):
+                self.AO.setVal( self.alu.SRL(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x10):
                 #SEQU
-                self.AO.setVal( self.alu.SEQU(self.A, self.B) )
-            elif (self.Imm == 0x11):
+                self.AO.setVal( self.alu.SEQU(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x11):
                 #SNEU
-                self.AO.setVal( self.alu.SNEU(self.A, self.B) )
-            elif (self.Imm == 0x12):
+                self.AO.setVal( self.alu.SNEU(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x12):
                 #SLTU
-                self.AO.setVal( self.alu.SLTU(self.A, self.B) )
-            elif (self.Imm == 0x13):
+                self.AO.setVal( self.alu.SLTU(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x13):
                 #SGTU
-                self.AO.setVal( self.alu.SGTU(self.A, self.B) )
-            elif (self.Imm == 0x14):
+                self.AO.setVal( self.alu.SGTU(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x14):
                 #SLEU
-                self.AO.setVal( self.alu.SLEU(self.A, self.B) )
-            elif (self.Imm == 0x15):
+                self.AO.setVal( self.alu.SLEU(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x15):
                 #SGEU
-                self.AO.setVal( self.alu.SGEU(self.A, self.B) )
-            elif (self.Imm == 0x28):
+                self.AO.setVal( self.alu.SGEU(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x28):
                 #SEQ
-                self.AO.setVal( self.alu.SEQ(self.A, self.B) )
-            elif (self.Imm == 0x29):
+                self.AO.setVal( self.alu.SEQ(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x29):
                 #SNE
-                self.AO.setVal( self.alu.SRL(self.A, self.B) )
-            elif (self.Imm == 0x2A):
+                self.AO.setVal( self.alu.SRL(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x2A):
                 #SLT
-                self.AO.setVal( self.alu.SLT(self.A, self.B) )
-            elif (self.Imm == 0x2B):
+                self.AO.setVal( self.alu.SLT(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x2B):
                 #SGT
-                self.AO.setVal( self.alu.SGT(self.A, self.B) )
-            elif (self.Imm == 0x2C):
+                self.AO.setVal( self.alu.SGT(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x2C):
                 #SLE
-                self.AO.setVal( self.alu.SLE(self.A, self.B) )
-            elif (self.Imm == 0x2D):
+                self.AO.setVal( self.alu.SLE(self.A.getVal(), self.B.getVal()) )
+            elif (self.Imm.getVal().uint == 0x2D):
                 #SGE
-                self.AO.setVal( self.alu.SGE(self.A, self.B) )
+                self.AO.setVal( self.alu.SGE(self.A.getVal(), self.B.getVal()) )
             else:
                 print("Fehler")
 
         elif ( __OP.uint <= 0x03 ):
             # J-Type
             if ( __OP.uint == 0x02 ):
-                self.AO.setVal( self.alu.J(self.Imm) )
-            elif (self.Imm == 0x03):
+                self.AO.setVal( self.alu.J(self.Imm.getVal()) )
+            elif (self.Imm.getVal().uint == 0x03):
                 #SRL
-                self.AO.setVal( self.alu.JAL(self.A, self.B) )
+                self.AO.setVal( self.alu.JAL(self.A.getVal(), self.B.getVal()) )
         else:
             # I-Type
             # Branches
@@ -200,9 +200,9 @@ class DLX_Pipeline:
                 #BEQZ
                 if(self.A.getVal().uint == 0x00):
                     self.Cond.setVal(BitArray(hex='0xAAAA'))
+                    self.AO.setVal( self.alu.ADD( self.NPC.getVal() ), self.Imm.getVal() )
                 else:
                     self.Cond.setVal(BitArray(hex='0x5555'))
-                #self.AO.setVal( self.alu.ADD(self.PC ) )
             elif (__OP.uint == 0x05):
                 #BNEZ
                 if(self.A.getVal().uint != 0x00):
@@ -218,70 +218,70 @@ class DLX_Pipeline:
                 thumbs = 'twiddle'
             elif (__OP.uint == 0x08):
                 #ADDI
-                self.AO.setVal( self.alu.ADD(self.A, self.Imm) )
+                self.AO.setVal( self.alu.ADD(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x09):
                 #ADDUI
-                self.AO.setVal( self.alu.ADDU(self.A, self.Imm) )
+                self.AO.setVal( self.alu.ADDU(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x0A):
                 #SUBI
-                self.AO.setVal( self.alu.SUB(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SUB(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x0B):
                 #SUBUI
-                self.AO.setVal( self.alu.SUBU(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SUBU(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x0C):
                 #ANDI
-                self.AO.setVal( self.alu.AND(self.A, self.Imm) )
+                self.AO.setVal( self.alu.AND(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x0D):
                 #ORI
-                self.AO.setVal( self.alu.OR(self.A, self.Imm) )
+                self.AO.setVal( self.alu.OR(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x0E):
                 #XORI
-                self.AO.setVal( self.alu.XOR(self.A, self.Imm) )
+                self.AO.setVal( self.alu.XOR(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x14):
                 #SLLI
-                self.AO.setVal( self.alu.SLL(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SLL(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x17):
                 #SRAI
-                self.AO.setVal( self.alu.SRA(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SRA(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x16):
                 #SRLI
-                self.AO.setVal( self.alu.SRL(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SRL(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x30):
                 #SEQUI
-                self.AO.setVal( self.alu.SEQU(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SEQU(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x31):
                 #SNEUI
-                self.AO.setVal( self.alu.SNEU(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SNEU(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x32):
                 #SLTUI
-                self.AO.setVal( self.alu.SLTU(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SLTU(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x33):
                 #SGTUI
-                self.AO.setVal( self.alu.SGTU(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SGTU(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x34):
                 #SLEUI
-                self.AO.setVal( self.alu.SLEU(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SLEU(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x35):
                 #SGEUI
-                self.AO.setVal( self.alu.SGEU(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SGEU(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x18):
                 #SEQI
-                self.AO.setVal( self.alu.SEQ(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SEQ(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x19):
                 #SNEI
-                self.AO.setVal( self.alu.SRL(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SRL(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x1A):
                 #SLTI
-                self.AO.setVal( self.alu.SLT(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SLT(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x1B):
                 #SGTI
-                self.AO.setVal( self.alu.SGT(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SGT(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x1C):
                 #SLEI
-                self.AO.setVal( self.alu.SLE(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SLE(self.A.getVal(), self.Imm.getVal()) )
             elif (__OP.uint == 0x1D):
                 #SGEI
-                self.AO.setVal( self.alu.SGE(self.A, self.Imm) )
+                self.AO.setVal( self.alu.SGE(self.A.getVal(), self.Imm.getVal()) )
             else:
                 print("Fehler")
 
@@ -299,7 +299,7 @@ class DLX_Pipeline:
         #   pass through AO
         if ( __OP.uint == '0x0F' ):
             # for LHI
-            self.LMD.setVal( BitArray( uint=self.Imm.uint << 16, length=32 ) )
+            self.LMD.setVal( BitArray( uint=self.Imm.getVal().uint << 16, length=32 ) )
         elif ( __OP.uint == '0x23' ):
             # for LW
             self.LMD.setVal( self.__extend( self.storage.getW( self.regbank.getRegByID(__rs1).getVal().int + self.Imm.getVal().int ) ) )
