@@ -6,7 +6,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from MainWindow import *
      
-     
+
 class ControlMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(ControlMainWindow, self).__init__(parent)
@@ -15,6 +15,7 @@ class ControlMainWindow(QtGui.QMainWindow):
    
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
+    loadwidget = QtGui.QWidget()
     mySW = ControlMainWindow()
     mySW.show()
     sys.exit(app.exec_())

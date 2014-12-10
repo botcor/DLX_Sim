@@ -33,12 +33,18 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
         self.DW1 = QtGui.QDockWidget(MainWindow)
         self.DW1.setObjectName("DW1")
-        self.DW1_Contents = QtGui.QWidget()
-        self.DW1_Contents.setObjectName("DW1_Contents")
+        self.DW1_Contents = QtGui.QListView(self.DW1)
+        self.DW1_Contents.setGeometry(QtCore.QRect(0, 10, 401, 291))
+        self.DW1_Contents.setGridSize(QtCore.QSize(0, 0))
+        self.DW1_Contents.setUniformItemSizes(True)
+        self.DW1_Contents.setSelectionRectVisible(True)
+        self.DW1_Contents.setObjectName("listView")
         self.DW1.setWidget(self.DW1_Contents)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.DW1)
+
         self.actionProgramm_laden = QtGui.QAction(MainWindow)
         self.actionProgramm_laden.setObjectName("actionProgramm_laden")
+        
         self.actionReset_DLX = QtGui.QAction(MainWindow)
         self.actionReset_DLX.setObjectName("actionReset_DLX")
         self.actionProgram = QtGui.QAction(MainWindow)
@@ -109,3 +115,9 @@ class Ui_MainWindow(object):
         self.actionMemory_Size.setText(QtGui.QApplication.translate("MainWindow", "Memory Size", None, QtGui.QApplication.UnicodeUTF8))
         self.actionStatistics.setText(QtGui.QApplication.translate("MainWindow", "Statistics", None, QtGui.QApplication.UnicodeUTF8))
 
+    def setOpenFileName(self, parent):   
+        filters = "All Files (*);;CSV (*.csv *.CSV)" # Only allow these file ext to be opened
+        title = "Load a Program"
+        open_at = "/home/"
+        fileName = QtGui.QFileDialog.getOpenFileName(parent, title, open_at, filters)
+        print(fileName)
