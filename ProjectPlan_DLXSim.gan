@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="DLX Simulator" company="Hochschul-Project IC-Labor" webLink="http://" view-date="2014-11-17" view-index="0" gantt-divider-location="333" resource-divider-location="300" version="2.0" locale="de">
+<?xml version="1.0" encoding="UTF-8"?><project name="DLX Simulator" company="Hochschul-Project IC-Labor" webLink="http://" view-date="2014-10-27" view-index="0" gantt-divider-location="333" resource-divider-location="300" version="2.0" locale="de">
     <description/>
-    <view zooming-state="default:5" id="gantt-chart">
-        <field id="tpd3" name="Vorgang" width="67" order="0"/>
+    <view zooming-state="default:7" id="gantt-chart">
+        <field id="tpd3" name="Vorgang" width="66" order="0"/>
         <field id="tpd4" name="Anfang" width="14" order="1"/>
         <field id="tpd5" name="Ende" width="18" order="2"/>
     </view>
@@ -87,10 +87,10 @@
             <depend id="76" type="2" difference="7" hardness="Strong"/>
         </task>
         <task id="95" name="Fertigstellung DLX Architektur" color="#0033cc" meeting="true" start="2014-12-06" duration="0" complete="0" expand="true"/>
-        <task id="121" name="Fertigstellung GUI" color="#cc0033" meeting="true" start="2015-01-24" duration="0" complete="0" expand="true"/>
-        <task id="124" name="Fertigstellung Simulator" color="#33cc00" meeting="true" start="2014-12-31" duration="0" complete="0" expand="true"/>
+        <task id="121" name="Fertigstellung GUI" color="#cc0033" meeting="true" start="2015-02-02" duration="0" complete="0" expand="true"/>
+        <task id="124" name="Fertigstellung Simulator" color="#33cc00" meeting="true" start="2015-01-14" duration="0" complete="0" expand="true"/>
         <task id="150" name="Präsentation" color="#ff0000" meeting="true" start="2015-01-15" duration="0" complete="0" expand="true"/>
-        <task id="3" name="Implementierung" color="#99ccff" meeting="false" start="2014-10-27" duration="83" complete="0" expand="true">
+        <task id="3" name="Implementierung" color="#99ccff" meeting="false" start="2014-10-27" duration="92" complete="0" expand="true">
             <task id="72" name="DLX-Architektur" color="#0033cc" meeting="false" start="2014-10-27" duration="38" complete="0" expand="true">
                 <depend id="95" type="2" difference="0" hardness="Strong"/>
                 <task id="11" name="DLX-Übersetzer" color="#0033cc" meeting="false" start="2014-10-27" duration="1" complete="0" expand="true"/>
@@ -108,40 +108,38 @@
                 </task>
                 <task id="15" name="DLX-Forwarding" color="#0033cc" meeting="false" start="2014-12-01" duration="5" complete="0" expand="true"/>
             </task>
-            <task id="74" name="GUI" color="#cc0033" meeting="false" start="2014-12-08" duration="43" complete="0" expand="true">
+            <task id="74" name="GUI" color="#cc0033" meeting="false" start="2014-12-08" duration="52" complete="0" expand="true">
                 <depend id="121" type="2" difference="0" hardness="Strong"/>
-                <task id="21" name="GUI-Hauptfenster" color="#cc0033" meeting="false" start="2014-12-08" duration="6" complete="0" expand="true">
-                    <depend id="23" type="2" difference="14" hardness="Strong"/>
-                    <depend id="25" type="2" difference="20" hardness="Strong"/>
+                <task id="21" name="GUI-Hauptfenster" color="#cc0033" meeting="false" start="2014-12-08" duration="5" complete="0" expand="true">
+                    <depend id="23" type="2" difference="21" hardness="Strong"/>
+                    <depend id="25" type="2" difference="28" hardness="Strong"/>
                     <depend id="27" type="2" difference="8" hardness="Strong"/>
-                    <depend id="33" type="2" difference="30" hardness="Strong"/>
-                    <depend id="109" type="2" difference="25" hardness="Strong"/>
+                    <depend id="33" type="2" difference="40" hardness="Strong"/>
+                    <depend id="109" type="2" difference="32" hardness="Strong"/>
                 </task>
-                <task id="23" name="GUI-Pipeline" color="#cc0033" meeting="false" start="2014-12-30" duration="8" complete="0" expand="true"/>
-                <task id="25" name="GUI-Register" color="#cc0033" meeting="false" start="2015-01-07" duration="7" complete="0" expand="true"/>
-                <task id="109" name="GUI-Programm" color="#cc0033" meeting="false" start="2015-01-12" duration="7" complete="0" expand="true"/>
-                <task id="33" name="GUI-Taktzyklen" color="#cc0033" meeting="false" start="2015-01-17" duration="7" complete="0" expand="true"/>
+                <task id="23" name="GUI-Pipeline" color="#cc0033" meeting="false" start="2015-01-07" duration="8" complete="0" expand="true"/>
+                <task id="25" name="GUI-Register" color="#cc0033" meeting="false" start="2015-01-14" duration="7" complete="0" expand="true"/>
+                <task id="109" name="GUI-Programm" color="#cc0033" meeting="false" start="2015-01-18" duration="7" complete="0" expand="true"/>
+                <task id="33" name="GUI-Taktzyklen" color="#cc0033" meeting="false" start="2015-01-26" duration="7" complete="0" expand="true"/>
             </task>
-            <task id="76" name="Simulator" color="#33cc00" meeting="false" start="2014-11-10" duration="49" complete="0" expand="true">
+            <task id="76" name="Simulator" color="#33cc00" meeting="false" start="2014-11-24" duration="47" complete="0" expand="true">
                 <depend id="124" type="2" difference="0" hardness="Strong"/>
-                <task id="36" name="SIM-Parser" color="#33cc00" meeting="false" start="2014-11-10" duration="24" complete="0" expand="true">
-                    <depend id="29" type="2" difference="0" hardness="Strong"/>
-                </task>
-                <task id="29" name="SIM-Programm einlesen" color="#33cc00" meeting="false" start="2014-12-04" duration="5" complete="0" expand="true">
+                <task id="29" name="SIM-Programm einlesen" color="#33cc00" meeting="false" start="2014-11-24" duration="19" complete="0" expand="true">
                     <depend id="31" type="2" difference="0" hardness="Strong"/>
                 </task>
-                <task id="27" name="SIM-Einstellungen" color="#33cc00" meeting="false" start="2014-12-22" duration="7" complete="0" expand="true"/>
-                <task id="31" name="SIM-Programm abarbeiten" color="#33cc00" meeting="false" start="2014-12-09" duration="7" complete="0" expand="true">
-                    <depend id="88" type="2" difference="0" hardness="Strong"/>
+                <task id="27" name="SIM-Einstellungen" color="#33cc00" meeting="false" start="2014-12-21" duration="13" complete="0" expand="true"/>
+                <task id="31" name="SIM-Programm abarbeiten" color="#33cc00" meeting="false" start="2014-12-13" duration="7" complete="0" expand="true">
+                    <depend id="88" type="2" difference="14" hardness="Strong"/>
                 </task>
-                <task id="88" name="SIM-Statistik" color="#33cc00" meeting="false" start="2014-12-16" duration="7" complete="0" expand="true"/>
+                <task id="88" name="SIM-Statistik" color="#33cc00" meeting="false" start="2015-01-07" duration="7" complete="0" expand="true"/>
             </task>
         </task>
-        <task id="18" name="Testen" color="#ffff99" meeting="false" start="2014-10-29" duration="51" complete="0" expand="true">
+        <task id="18" name="Testen" color="#ffff99" meeting="false" start="2014-10-29" duration="81" complete="0" expand="true">
             <task id="77" name="Logger/Debug" color="#ffff99" meeting="false" start="2014-10-29" duration="3" complete="0" expand="true"/>
-            <task id="19" name="Plan erstellen" color="#ffff99" meeting="false" start="2014-11-03" duration="7" complete="0" expand="true"/>
-            <task id="20" name="Testprogramm erstellen" color="#ffff99" meeting="false" start="2014-11-10" duration="7" complete="0" expand="true"/>
-            <task id="146" name="Durchführung" color="#ffff99" meeting="false" start="2014-11-17" duration="34" complete="0" expand="true"/>
+            <task id="19" name="Plan erstellen" color="#ffff99" meeting="false" start="2014-11-10" duration="71" complete="0" expand="true"/>
+            <task id="20" name="Testprogramm erstellen" color="#ffff99" meeting="false" start="2014-11-10" duration="14" complete="0" expand="true"/>
+            <task id="193" name="Testfälle erstellen" color="#ffffcc" meeting="false" start="2014-11-24" duration="54" complete="0" expand="true"/>
+            <task id="146" name="Durchführung" color="#ffff99" meeting="false" start="2014-11-29" duration="52" complete="0" expand="true"/>
         </task>
         <task id="0" name="Dokumentation" color="#ff9999" meeting="false" start="2014-10-10" duration="68" complete="0" expand="true">
             <task id="78" name="Gliederung" color="#ff9999" meeting="false" start="2014-10-10" duration="4" complete="0" expand="true"/>
@@ -184,9 +182,9 @@
         <displaycolumn property-id="tpd8" order="-1" width="75" visible="false"/>
         <displaycolumn property-id="tpd9" order="-1" width="75" visible="false"/>
         <displaycolumn property-id="tpd2" order="-1" width="75" visible="false"/>
-        <displaycolumn property-id="tpd3" order="0" width="213" visible="true"/>
-        <displaycolumn property-id="tpd4" order="1" width="44" visible="true"/>
-        <displaycolumn property-id="tpd5" order="2" width="57" visible="true"/>
+        <displaycolumn property-id="tpd3" order="0" width="218" visible="true"/>
+        <displaycolumn property-id="tpd4" order="1" width="49" visible="true"/>
+        <displaycolumn property-id="tpd5" order="2" width="62" visible="true"/>
     </taskdisplaycolumns>
     <previous/>
     <roles roleset-name="Default"/>
