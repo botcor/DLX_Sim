@@ -8,7 +8,7 @@
 # 
 # History:
 #   18.11.2014  -   add Registers, stage functions IF and ID
-#   20.11.2014  -   add __extend and __0extend, __insFIFO
+#   20.11.2014  -   add __extend and __0extend, insFIFO
 #                   change the __op stuff in doID()
 #   21.11.2014  -   add the right extension of Imm for the different opcodes
 #   22.11.2014  -   add functionality of EX including ALU calls and Condition checking
@@ -25,7 +25,7 @@ class DLX_Pipeline:
         self.piperegs = ['PC','NPC','IR','A','B','Imm','Cond','AO','LMD']
         mylogger.info("Pipeline Stages: %s",self.stages)
         mylogger.info("Pipeline Registers: %s",self.piperegs)
-        self.__insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
+        self.insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
         self.storage = storage
         self.alu = alu
         self.regbank = regbank
@@ -41,8 +41,8 @@ class DLX_Pipeline:
         forwarding = 'true'
 
     def __shiftFIFO(self, n):
-        self.__insFIFO[:n] + self.__insFIFO[n:]
-        self.__insFIFO[0] = 0
+        self.insFIFO[:n] + self.insFIFO[n:]
+        self.insFIFO[0] = 0
 
     def __extend(self, value):
         return BitArray(int=value.int, length=32)
@@ -52,9 +52,9 @@ class DLX_Pipeline:
 
     def doIF(self):
         # get the next word from storage (indicated by PC) and store it to the IR Register
-        self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint )), length=32 ) )
+        self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
         # store the Instruction to insFIFO as well
-        self.__insFIFO[0] = self.IR.getVal()
+        self.insFIFO[0] = self.IR.getVal()
         # increase the PC by 4 (bytes) and store in NPC
         self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
         
@@ -71,17 +71,17 @@ class DLX_Pipeline:
             # get rs2   which is @                                   v
             self.B.setVal( self.regbank.getRegByID( self.IR.getVal()[11:16].uint ).getVal() )
             # get func  whitch is @                                    v
-            self.Imm.setVal( self.regbank.getRegByID( self.IR.getVal()[16:32].uint ).getVal() )
+            self.Imm.setVal( self.IR.getVal()[21:32] )
         elif ( __OP.uint <= 0x03 ):
             # J-Type
             # get dist  which is @                                     v
-            self.Imm.setVal( self.regbank.getRegByID( self.IR.getVal()[6:32].uint ).getVal() )
+            self.Imm.setVal( self.IR.getVal()[6:32] )
         else:
             # I-Type
             # get rs1   which is @                                   v
             self.A.setVal( self.regbank.getRegByID( self.IR.getVal()[6:11].uint ).getVal() )
             # get immediate   which is @                               v
-            self.Imm.setVal( self.regbank.getRegByID( self.IR.getVal()[16:32].uint ).getVal() )
+            self.Imm.setVal( self.IR.getVal()[16:32] )
 
         # determine the kind of extension and extend the Imm value
         if ( __OP.uint == 0x08 | __OP.uint == 0x0A | (__OP.uint >= 0x18 & __OP.uint <= 0x1D) |
@@ -102,7 +102,7 @@ class DLX_Pipeline:
 
     def doEX(self):
         # save the opcode aside (not DLX specified)
-        __IR = self.__insFIFO[2]
+        __IR = self.insFIFO[2]
         __OP = BitArray( __IR[0:6], length=6 )
         # determine Task by the rules:
         # dependent on Type load B or Imm
@@ -289,7 +289,7 @@ class DLX_Pipeline:
 
     def doMEM(self):
         # save the opcode aside (not DLX specified)
-        __IR = self.__insFIFO[3]
+        __IR = self.insFIFO[3]
         __OP = BitArray( __IR[0:6], length=6 )
         # get reference to rs1
         __rs1 = self.regbank.getRegByID( self.IR.getVal()[6:11].uint )
@@ -320,7 +320,7 @@ class DLX_Pipeline:
 
     def doWB(self):
         # save the opcode aside (not DLX specified)
-        __IR = self.__insFIFO(4)
+        __IR = self.insFIFO(4)
         __OP = BitArray( __IR[0:6], length=6 )
         # get reference to rs1
         __rs1 = self.regbank.getRegByID( self.IR.getVal()[6:11].uint )
