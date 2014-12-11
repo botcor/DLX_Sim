@@ -38,8 +38,9 @@ sys.stderr = TestHandler()
 testmodules = [
 #    'UnitTestsALU',
 #    'UnitTestsReg',
-     'IntegTestPipeline_IF',
+#     'IntegTestPipeline_IF',
 #    'IntegTestPipeline_ID',
+     'IntegTestPipeline_EX',
     ]
 
 suite = unittest.TestSuite()
