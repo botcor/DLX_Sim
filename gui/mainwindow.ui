@@ -27,33 +27,34 @@
     <property name="title">
      <string>DLX_Sim</string>
     </property>
-    <addaction name="actionProgramm_laden"/>
-    <addaction name="actionReset_DLX"/>
+    <addaction name="action_LoadProgram"/>
+    <addaction name="action_ResetDLX"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
      <string>Window</string>
     </property>
-    <addaction name="actionProgram"/>
-    <addaction name="actionPipeline"/>
-    <addaction name="actionMemory"/>
-    <addaction name="actionRegisters"/>
-    <addaction name="actionStatistics"/>
+    <addaction name="action_ProgramView"/>
+    <addaction name="action_PipelineView"/>
+    <addaction name="action_MemoryView"/>
+    <addaction name="action_RegisterView"/>
+    <addaction name="action_StatisticsView"/>
    </widget>
    <widget class="QMenu" name="menuSimulator">
     <property name="title">
      <string>Simulator</string>
     </property>
-    <addaction name="actionNext_Step"/>
-    <addaction name="actionMore_Steps"/>
-    <addaction name="actionRun"/>
+    <addaction name="action_NextStep"/>
+    <addaction name="action_MoreSteps"/>
+    <addaction name="action_Run"/>
    </widget>
    <widget class="QMenu" name="menuPipeline">
     <property name="title">
      <string>DLX</string>
     </property>
-    <addaction name="actionForwarding"/>
-    <addaction name="actionMemory_Size"/>
+    <addaction name="action_Forwarding"/>
+    <addaction name="action_MemorySize"/>
    </widget>
    <addaction name="menuDLX_Sim_MainWindow"/>
    <addaction name="menuWindow"/>
@@ -65,19 +66,31 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="DW1_Contents"/>
+   <widget class="QWidget" name="ProgramView"/>
   </widget>
-  <action name="actionProgramm_laden">
+  <widget class="QDockWidget" name="DW3">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="RegView"/>
+  </widget>
+  <action name="action_LoadProgram">
    <property name="text">
     <string>Load Program</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
   </action>
-  <action name="actionReset_DLX">
+  <action name="action_ResetDLX">
    <property name="text">
     <string>Reset DLX</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
-  <action name="actionProgram">
+  <action name="action_ProgramView">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -88,7 +101,7 @@
     <string>Program</string>
    </property>
   </action>
-  <action name="actionPipeline">
+  <action name="action_PipelineView">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -99,7 +112,7 @@
     <string>Pipeline</string>
    </property>
   </action>
-  <action name="actionMemory">
+  <action name="action_MemoryView">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -107,7 +120,7 @@
     <string>Memory</string>
    </property>
   </action>
-  <action name="actionRegisters">
+  <action name="action_RegisterView">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -118,22 +131,31 @@
     <string>Registers</string>
    </property>
   </action>
-  <action name="actionNext_Step">
+  <action name="action_NextStep">
    <property name="text">
     <string>Next Step</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
   </action>
-  <action name="actionMore_Steps">
+  <action name="action_MoreSteps">
    <property name="text">
     <string>More Steps</string>
    </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
   </action>
-  <action name="actionRun">
+  <action name="action_Run">
    <property name="text">
     <string>Run</string>
    </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
   </action>
-  <action name="actionForwarding">
+  <action name="action_Forwarding">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -141,17 +163,22 @@
     <string>Forwarding</string>
    </property>
   </action>
-  <action name="actionMemory_Size">
+  <action name="action_MemorySize">
    <property name="text">
     <string>Memory Size</string>
    </property>
   </action>
-  <action name="actionStatistics">
+  <action name="action_StatisticsView">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
     <string>Statistics</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
    </property>
   </action>
  </widget>
