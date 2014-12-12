@@ -3,17 +3,17 @@
 import sys
 from PySide import QtCore, QtGui
 
-class ProgramView():
+class View():
     def __init__(self):    
         self.view = QtGui.QListView()
-        self.view.setObjectName("Program View")
         self.view.setGeometry(QtCore.QRect(0, 10, 401, 291))
         self.view.setUniformItemSizes(True)
         self.view.setSelectionRectVisible(True)
         self.model = QtGui.QStandardItemModel(self.view)
         self.view.setModel(self.model)
 
-    def setProgram(self):
+class ProgramView(View):
+    def setContent(self):
         # create an item with a caption
         item1 = QtGui.QStandardItem("Item in the Model. 1")
         # Add the item to the model
@@ -31,23 +31,79 @@ class ProgramView():
         # Add the item to the model
         self.model.appendRow(item4)
 
-def showPipeline():
-    mySW.ui.DW1 = QtGui.QDockWidget(mySW)
-    mySW.ui.DW1.setObjectName("DW1")
-    mySW.ui.DW1.setWidget(mySW.ui.ProgramView)
+class PipelineView(View):
+    def setContent(self):
+        # create an item with a caption
+        item1 = QtGui.QStandardItem("Maybe show some rectangles")
+        # Add the item to the model
+        self.model.appendRow(item1)
+        # create an item with a caption
+        item2 = QtGui.QStandardItem("an the current instruction")
+        # Add the item to the model
+        self.model.appendRow(item2)
+        # create an item with a caption
+        item3 = QtGui.QStandardItem("in every single stage")
+        # Add the item to the model
+        self.model.appendRow(item3)
+        # create an item with a caption
+        item4 = QtGui.QStandardItem("if possible.")
+        # Add the item to the model
+        self.model.appendRow(item4)
 
-def showMemory():
-    mySW.ui.DW1 = QtGui.QDockWidget(mySW)
-    mySW.ui.DW1.setObjectName("DW1")
-    mySW.ui.DW1.setWidget(mySW.ui.ProgramView)
+class MemoryView(View):
+    def setContent(self):
+        # create an item with a caption
+        item1 = QtGui.QStandardItem("adress, word")
+        # Add the item to the model
+        self.model.appendRow(item1)
+        # create an item with a caption
+        item2 = QtGui.QStandardItem("adress, word")
+        # Add the item to the model
+        self.model.appendRow(item2)
+        # create an item with a caption
+        item3 = QtGui.QStandardItem("adress, word")
+        # Add the item to the model
+        self.model.appendRow(item3)
+        # create an item with a caption
+        item4 = QtGui.QStandardItem("adress, word")
+        # Add the item to the model
+        self.model.appendRow(item4)
 
-def showRegisters():
-    mySW.ui.DW1 = QtGui.QDockWidget(mySW)
-    mySW.ui.DW1.setObjectName("DW1")
-    mySW.ui.DW1.setWidget(mySW.ui.ProgramView)
+class RegisterView(View):
+    def setContent(self):
+        # create an item with a caption
+        item1 = QtGui.QStandardItem("Some Registers")
+        # Add the item to the model
+        self.model.appendRow(item1)
+        # create an item with a caption
+        item2 = QtGui.QStandardItem("should be determined")
+        # Add the item to the model
+        self.model.appendRow(item2)
+        # create an item with a caption
+        item3 = QtGui.QStandardItem("by the Simulator")
+        # Add the item to the model
+        self.model.appendRow(item3)
+        # create an item with a caption
+        item4 = QtGui.QStandardItem("if possible.")
+        # Add the item to the model
+        self.model.appendRow(item4)
 
-def showStatistics():
-    mySW.ui.DW1 = QtGui.QDockWidget(mySW)
-    mySW.ui.DW1.setObjectName("DW1")
-    mySW.ui.DW1.setWidget(mySW.ui.ProgramView)
+def showStatistics(View):
+    def setContent(self):
+        # create an item with a caption
+        item1 = QtGui.QStandardItem("Show things like")
+        # Add the item to the model
+        self.model.appendRow(item1)
+        # create an item with a caption
+        item2 = QtGui.QStandardItem("MIPS")
+        # Add the item to the model
+        self.model.appendRow(item2)
+        # create an item with a caption
+        item3 = QtGui.QStandardItem("and amount of")
+        # Add the item to the model
+        self.model.appendRow(item3)
+        # create an item with a caption
+        item4 = QtGui.QStandardItem("load, store, alu instructions in %")
+        # Add the item to the model
+        self.model.appendRow(item4)
 

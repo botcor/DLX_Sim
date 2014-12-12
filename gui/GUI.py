@@ -1,4 +1,4 @@
-#!/usr/bin/python     
+#!/usr/bin/python
 
 # Import PySide classes
 import sys
@@ -20,31 +20,58 @@ def setOpenFileName():
     title = "Load a Program"
     open_at = "/home/"
     fileName = QtGui.QFileDialog.getOpenFileName(parent, title, open_at, filters)
-    pv.setProgram()
     return fileName
 
 def goNext():
-    LocalItem = pv.model.item(mySW.count)
+    LocalItem = progview.model.item(mySW.count)
     LocalItem.setBackground(QBrush(Qt.blue,Qt.FDiagPattern))
-    pv.model.setItem(mySW.count, LocalItem)
+    progview.model.setItem(mySW.count, LocalItem)
     mySW.count += 1
 
 def quitApp():
     app.quit()
 
 def showProgram():
+    progview.setContent()
     mySW.ui.DW1 = QtGui.QDockWidget(mySW)
     mySW.ui.DW1.setObjectName("DW1")
-    mySW.ui.DW1.setWidget(pv.view)
+    mySW.ui.DW1.setWidget(progview.view)
     mySW.addDockWidget(QtCore.Qt.DockWidgetArea(1), mySW.ui.DW1)
+
+def showRegisters():
+    regview.setContent()
+    mySW.ui.DW2 = QtGui.QDockWidget(mySW)
+    mySW.ui.DW2.setObjectName("DW2")
+    mySW.ui.DW2.setWidget(regview.view)
+    mySW.addDockWidget(QtCore.Qt.DockWidgetArea(2), mySW.ui.DW2)
+
+def showMemory():
+    memview.setContent()
+    mySW.ui.DW3 = QtGui.QDockWidget(mySW)
+    mySW.ui.DW3.setObjectName("DW3")
+    mySW.ui.DW3.setWidget(memview.view)
+    mySW.addDockWidget(QtCore.Qt.DockWidgetArea(1), mySW.ui.DW3)
+
+def showPipeline():
+    pipeview.setContent()
+    mySW.ui.DW4 = QtGui.QDockWidget(mySW)
+    mySW.ui.DW4.setObjectName("DW4")
+    mySW.ui.DW4.setWidget(pipeview.view)
+    mySW.addDockWidget(QtCore.Qt.DockWidgetArea(1), mySW.ui.DW4)
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mySW = ControlMainWindow()
     mySW.show()
-    pv = ProgramView()
+    progview = ProgramView()
+    regview = RegisterView()
+    memview = MemoryView()
+    pipeview = PipelineView()
     mySW.ui.action_LoadProgram.triggered.connect(setOpenFileName)
     mySW.ui.action_NextStep.triggered.connect(goNext)
     mySW.ui.action_ProgramView.triggered.connect(showProgram)
+    mySW.ui.action_RegisterView.triggered.connect(showRegisters)
+    mySW.ui.action_MemoryView.triggered.connect(showMemory)
+    mySW.ui.action_PipelineView.triggered.connect(showPipeline)
     sys.exit(app.exec_())
 
