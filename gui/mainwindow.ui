@@ -62,18 +62,6 @@
    <addaction name="menuPipeline"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="DW1">
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="ProgramView"/>
-  </widget>
-  <widget class="QDockWidget" name="DW3">
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="RegView"/>
-  </widget>
   <action name="action_LoadProgram">
    <property name="text">
     <string>Load Program</string>
@@ -95,7 +83,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Program</string>
@@ -106,7 +94,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Pipeline</string>
@@ -125,7 +113,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Registers</string>
