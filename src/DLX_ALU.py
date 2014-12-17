@@ -23,7 +23,7 @@ class DLX_ALU:
     #underfl = 0 #TODO underflow flag and detection
 
     def __init__(self): 
-        pass
+        mylogger.debug("DLX_ALU wurde angelegt")
     
     #ARITHMETIC and LOGIC
 

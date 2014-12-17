@@ -1,10 +1,14 @@
 import logging
 from bitstring import *
 
+#create logger
+mylogger = logging.getLogger("Speicher")
+
 class DLX_Speicher:
     storage = []
     size = 2048
     def __init__(self, size=2048):
+        mylogger.debug("DLX_Speicher wurde angelegt")
         x =  BitArray(uint=0, length=8)
         for i in range(0, size):
             self.storage.append(x)

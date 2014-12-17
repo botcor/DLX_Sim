@@ -18,6 +18,8 @@ import logging
 import inspect
 from DLX_Register import *
 
+#create logger
+mylogger = logging.getLogger("Pipeline")
 
 class DLX_Pipeline:
     def __init__(self, storage, alu, regbank):        
@@ -30,14 +32,14 @@ class DLX_Pipeline:
         self.alu = alu
         self.regbank = regbank
         self.PC = DLX_Register(name="PC")
-        self.NPC = DLX_Register()
-        self.IR = DLX_Register()
-        self.A = DLX_Register()
-        self.B = DLX_Register()
-        self.Imm = DLX_Register()
-        self.Cond = DLX_Register()
-        self.AO = DLX_Register()
-        self.LMD = DLX_Register()
+        self.NPC = DLX_Register(name="NPC")
+        self.IR = DLX_Register(name="IR")
+        self.A = DLX_Register(name="A")
+        self.B = DLX_Register(name="B")
+        self.Imm = DLX_Register(name="Imm")
+        self.Cond = DLX_Register(name="Cond")
+        self.AO = DLX_Register(name="AO")
+        self.LMD = DLX_Register(name="LMD")
         forwarding = 'true'
 
     def __shiftFIFO(self, n):
@@ -51,6 +53,7 @@ class DLX_Pipeline:
         return BitArray(uint=value.uint, length=32)
 
     def doIF(self):
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         # get the next word from storage (indicated by PC) and store it to the IR Register
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
         # store the Instruction to insFIFO as well
@@ -59,6 +62,7 @@ class DLX_Pipeline:
         self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
         
     def doID(self):
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         # save the opcode aside (not DLX specified)
         __OP = BitArray( self.IR.getVal()[0:6], length=6 )
         # determine the Instruction Format
@@ -101,6 +105,7 @@ class DLX_Pipeline:
         #
 
     def doEX(self):
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         # save the opcode aside (not DLX specified)
         __IR = self.insFIFO[2]
         __OP = BitArray( __IR[0:6], length=6 )
@@ -184,7 +189,7 @@ class DLX_Pipeline:
                 #SGE
                 self.AO.setVal( self.alu.SGE(self.A.getVal(), self.B.getVal()) )
             else:
-                print("Fehler")
+                mylogger.debug("Fehler in doEX R-Type")
 
         elif ( __OP.uint <= 0x03 ):
             # J-Type
@@ -283,11 +288,12 @@ class DLX_Pipeline:
                 #SGEI
                 self.AO.setVal( self.alu.SGE(self.A.getVal(), self.Imm.getVal()) )
             else:
-                print("Fehler")
+                mylogger.debug("Fehler in doEX I-Type")
 
         return 0
 
     def doMEM(self):
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         # save the opcode aside (not DLX specified)
         __IR = self.insFIFO[3]
         __OP = BitArray( __IR[0:6], length=6 )
@@ -319,6 +325,7 @@ class DLX_Pipeline:
             self.LMD.setVal( self.AO.getVal )
 
     def doWB(self):
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         # save the opcode aside (not DLX specified)
         __IR = self.insFIFO(4)
         __OP = BitArray( __IR[0:6], length=6 )
@@ -351,10 +358,10 @@ class DLX_Pipeline:
             self.regbank.getRegByID(__rd).setVal( self.LMD.getVal() )
 
     def doPipeNext(self):
-        mylogger.debug("Function: %s",(inspect.stack()[0][3]))
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]))
         mylogger.debug("PC:       %d",self.PC.getVal().uint)
-        mylogger.debug("Instruction FIFO: [0] %d, [1] %d, [2] %d, [3] %d, [4] %d", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
-        self.WB()
+        mylogger.debug("Instruction FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
+        self.doWB()
         self.doMEM()
         self.doEX()
         self.doID()
