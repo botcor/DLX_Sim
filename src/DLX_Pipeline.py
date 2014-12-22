@@ -296,33 +296,36 @@ class DLX_Pipeline:
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         # save the opcode aside (not DLX specified)
         __IR = self.insFIFO[3]
+        mylogger.debug("insFIFO[3]: %s",self.insFIFO[3] )
         __OP = BitArray( __IR[0:6], length=6 )
+        mylogger.debug("__OP: %s",__OP )
+        mylogger.debug("__OP.uint: %s",__OP.uint )
         # get reference to rs1
         __rs1 = self.regbank.getRegByID( self.IR.getVal()[6:11].uint )
 
         # dependent on opcode do
         #   get the data from storage and store to LMD
         #   pass through AO
-        if ( __OP.uint == '0x0F' ):
+        if ( __OP.uint == 0x0F ):
             # for LHI
             self.LMD.setVal( BitArray( uint=self.Imm.getVal().uint << 16, length=32 ) )
-        elif ( __OP.uint == '0x23' ):
+        elif ( __OP.uint == 0x23 ):
             # for LW
             self.LMD.setVal( self.__extend( self.storage.getW( self.regbank.getRegByID(__rs1).getVal().int + self.Imm.getVal().int ) ) )
-        elif (  __OP.uint == '0x20' ):
+        elif (  __OP.uint == 0x20 ):
             # for LB
             self.LMD.setVal( self.__extend( self.storage.getB( self.regbank.getRegByID(__rs1).getVal().int + self.Imm.getVal().int ) ) )
-        elif ( __OP.uint == '0x21' ):
+        elif ( __OP.uint == 0x21 ):
             # for LH
             self.LMD.setVal( self.__extend( self.storage.getH( self.regbank.getRegByID(__rs1).getVal().int + self.Imm.getVal().int ) ) )
-        elif ( __OP.uint == '0x24' ):
+        elif ( __OP.uint == 0x24 ):
             # for LBU
             self.LMD.setVal( self.__extend0( self.storage.getB( self.regbank.getRegByID(__rs1).getVal().int + self.Imm.getVal().int ) ) )
-        elif ( __OP.uint == '0x25' ):
+        elif ( __OP.uint == 0x25 ):
             # for LHU
             self.LMD.setVal( self.__extend0( self.storage.getH( self.regbank.getRegByID(__rs1).getVal().int + self.Imm.getVal().int ) ) )
         else:
-            self.LMD.setVal( self.AO.getVal )
+            self.LMD.setVal( self.AO.getVal() )
 
     def doWB(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
