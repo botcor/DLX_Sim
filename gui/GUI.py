@@ -2,10 +2,12 @@
 
 # Import PySide classes
 import sys
+sys.path.append('./src')
 from PySide.QtCore import *
 from PySide.QtGui import *
 from MainWindow import *
 from Views import *
+from Sim import *
 
 class ControlMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -20,6 +22,7 @@ def setOpenFileName():
     title = "Load a Program"
     open_at = "/home/"
     fileName = QtGui.QFileDialog.getOpenFileName(parent, title, open_at, filters)
+    mySIM.collectData(fileName[0])
     return fileName
 
 def goNext():
@@ -49,7 +52,7 @@ def showRegisters(checked):
 
 def showMemory(checked):
     if(checked):
-        memview.setContent()
+        memview.setContent(mySIM.storage)
         mySW.ui.DW3 = QtGui.QDockWidget(mySW)
         mySW.ui.DW3.setObjectName("DW3")
         mySW.ui.DW3.setWidget(memview.view)
@@ -67,6 +70,7 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mySW = ControlMainWindow()
     mySW.show()
+    mySIM = Simulator()
     progview = ProgramView()
     regview = RegisterView()
     memview = MemoryView()

@@ -2,6 +2,7 @@
 
 import sys
 from PySide import QtCore, QtGui
+from bitstring import *
 
 class View():
     def __init__(self):    
@@ -51,23 +52,21 @@ class PipelineView(View):
         self.model.appendRow(item4)
 
 class MemoryView(View):
-    def setContent(self):
-        # create an item with a caption
-        item1 = QtGui.QStandardItem("adress, word")
+    def setContent(self,storage):
+        item = []
+        x = 0
+        # Create the first line        
+        item.append( QtGui.QStandardItem("Adress\tWord") )
         # Add the item to the model
-        self.model.appendRow(item1)
-        # create an item with a caption
-        item2 = QtGui.QStandardItem("adress, word")
-        # Add the item to the model
-        self.model.appendRow(item2)
-        # create an item with a caption
-        item3 = QtGui.QStandardItem("adress, word")
-        # Add the item to the model
-        self.model.appendRow(item3)
-        # create an item with a caption
-        item4 = QtGui.QStandardItem("adress, word")
-        # Add the item to the model
-        self.model.appendRow(item4)
+        self.model.appendRow(item[x])
+        while x < storage.size/4:
+            # Get item from storage
+            word = BitArray(storage.getW(x*4))
+            # Create an item
+            item.append( QtGui.QStandardItem( repr(x*4) +"\t"+ word.hex) )
+            # Add the item to the model
+            self.model.appendRow(item[x])
+            x += 1
 
 class RegisterView(View):
     def setContent(self):
