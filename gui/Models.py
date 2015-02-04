@@ -35,20 +35,35 @@ class PipelineModel(Model):
         self.Line_Height = 20
         self.Colm_Width = 40
         self.Pen = QtGui.QPen("black")
-        self.Font =  QtGui.QFont("Helvetica")
+        self.Pen1 = QtGui.QPen(QtCore.Qt.DotLine)
+        self.Font = QtGui.QFont("Helvetica")
         self.Font.setPointSize(11)
-        self.Brush1 = QtGui.QBrush(QtCore.Qt.yellow,QtCore.Qt.SolidPattern)
+        self.Brush1 = QtGui.QBrush(QtCore.Qt.yellow, QtCore.Qt.SolidPattern)
+        self.Turn = 0
     def setContentInitial(self):
         self.model.addLine(0,0,0,400,self.Pen)
         self.model.addLine(150,0,150,400,self.Pen)
-        self.model.addLine(0,0,200,0,self.Pen)
-        self.model.addLine(0,25,200,25,self.Pen)
+        self.model.addLine(0,0,190,0,self.Pen)
+        self.model.addLine(0,25,190,25,self.Pen)
         self.model.addText("Command", self.Font)
-    def progmod.setContent(self):
-        #add the new content of the current turn
+    def setContent(self):
+        
+        CurserX = 150 + self.Colm_Width * self.Turn
+        CurserY = 30 + self.Line_Height * self.Turn
+        # add the new content of the current turn
+        # add the new command and number of the current clock cycle
         new_command = self.model.addText("neuer Befehl")
-        new_command.y = self.line_height * turn
-        self.model.addRect(150,30,colm_width,line_height,pen,brush1)
+        new_command.setY(CurserY)
+        new_num = self.model.addText(str(self.Turn),self.Font)
+        new_num.setX(CurserX)
+        # extend the two top lines
+        self.model.addLine(CurserX + self.Colm_Width, 25, self.Colm_Width, 25, self.Pen)
+        self.model.addLine(CurserX + self.Colm_Width, 0, self.Colm_Width, 0, self.Pen)
+        # add the dotted clock cycle line
+        self.model.addLine(CurserX + self.Colm_Width, 0, CurserX + self.Colm_Width, 400, self.Pen1)
+        # add the rectangles
+        self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
+        self.Turn += 1
             
 
 class MemoryModel(Model):

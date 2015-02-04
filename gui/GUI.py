@@ -26,10 +26,7 @@ def setOpenFileName():
     return fileName
 
 def goNext():
-    LocalItem = progview.model.item(mySW.count)
-    LocalItem.setBackground(QBrush(Qt.blue,Qt.FDiagPattern))
-    progview.model.setItem(mySW.count, LocalItem)
-    mySW.count += 1
+    pipemod.setContent()
 
 def quitApp():
     app.quit()
@@ -63,7 +60,7 @@ if __name__ == "__main__":
     regmod = RegisterModel(mySW.ui.registerview)
     memmod = MemoryModel(mySW.ui.memoryview)
     # setup the initial content of the models
-    progmod.setContentInitial()
+    pipemod.setContentInitial()
     # connect the menu actions to the custom functions
     mySW.ui.action_LoadProgram.triggered.connect(setOpenFileName)
     mySW.ui.action_NextStep.triggered.connect(goNext)
