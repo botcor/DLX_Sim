@@ -5,8 +5,8 @@ import sys
 sys.path.append('./src')
 from PySide.QtCore import *
 from PySide.QtGui import *
-from MainWindow import *
-from Views import *
+from MainWindow1 import *
+from Models import *
 from Sim import *
 
 class ControlMainWindow(QtGui.QMainWindow):
@@ -36,45 +36,35 @@ def quitApp():
 
 def showProgram(checked):
     if(checked):    
-        progview.setContent()
-        mySW.ui.DW1 = QtGui.QDockWidget(mySW)
-        mySW.ui.DW1.setObjectName("DW1")
-        mySW.ui.DW1.setWidget(progview.view)
-        mySW.addDockWidget(QtCore.Qt.DockWidgetArea(1), mySW.ui.DW1)
+        progmod.setContent()
 
 def showRegisters(checked):
-    if(checked):    
-        regview.setContent()
-        mySW.ui.DW2 = QtGui.QDockWidget(mySW)
-        mySW.ui.DW2.setObjectName("DW2")
-        mySW.ui.DW2.setWidget(regview.view)
-        mySW.addDockWidget(QtCore.Qt.DockWidgetArea(2), mySW.ui.DW2)
+    if(checked):
+        regmod.setContent()
 
 def showMemory(checked):
     if(checked):
-        memview.setContent(mySIM.storage)
-        mySW.ui.DW3 = QtGui.QDockWidget(mySW)
-        mySW.ui.DW3.setObjectName("DW3")
-        mySW.ui.DW3.setWidget(memview.view)
-        mySW.addDockWidget(QtCore.Qt.DockWidgetArea(1), mySW.ui.DW3)
+        memmod.setContent(mySIM.storage)
 
 def showPipeline(checked):
     if(checked):
-        pipeview.setContent()
-        mySW.ui.DW4 = QtGui.QDockWidget(mySW)
-        mySW.ui.DW4.setObjectName("DW4")
-        mySW.ui.DW4.setWidget(pipeview.view)
-        mySW.addDockWidget(QtCore.Qt.DockWidgetArea(1), mySW.ui.DW4)
+        pipemod.setContent()
+
 
 if __name__ == "__main__":
+    # general stuff
     app = QtGui.QApplication(sys.argv)
     mySW = ControlMainWindow()
     mySW.show()
     mySIM = Simulator()
-    progview = ProgramView()
-    regview = RegisterView()
-    memview = MemoryView()
-    pipeview = PipelineView()
+    # construct and connect the models to the views
+    progmod = ProgramModel(mySW.ui.programview)
+    pipemod = PipelineModel(mySW.ui.pipeview)
+    regmod = RegisterModel(mySW.ui.registerview)
+    memmod = MemoryModel(mySW.ui.memoryview)
+    # setup the initial content of the models
+    progmod.setContentInitial()
+    # connect the menu actions to the custom functions
     mySW.ui.action_LoadProgram.triggered.connect(setOpenFileName)
     mySW.ui.action_NextStep.triggered.connect(goNext)
     mySW.ui.action_ProgramView.toggled.connect(showProgram)
