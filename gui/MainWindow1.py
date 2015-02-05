@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file './mainwindow.ui'
 #
-# Created: Tue Feb  3 17:51:55 2015
+# Created: Thu Feb  5 11:17:33 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -190,11 +190,13 @@ class Ui_MainWindow(object):
         self.DW5.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Statistics", None, QtGui.QApplication.UnicodeUTF8))
         self.action_LoadProgram.setText(QtGui.QApplication.translate("MainWindow", "Load Program", None, QtGui.QApplication.UnicodeUTF8))
         self.action_ResetDLX.setText(QtGui.QApplication.translate("MainWindow", "Reset DLX", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_ResetDLX.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+R", "Ctrl+R", QtGui.QApplication.UnicodeUTF8))
         self.action_ProgramView.setText(QtGui.QApplication.translate("MainWindow", "Program", None, QtGui.QApplication.UnicodeUTF8))
         self.action_PipelineView.setText(QtGui.QApplication.translate("MainWindow", "Pipeline", None, QtGui.QApplication.UnicodeUTF8))
         self.action_MemoryView.setText(QtGui.QApplication.translate("MainWindow", "Memory", None, QtGui.QApplication.UnicodeUTF8))
         self.action_RegisterView.setText(QtGui.QApplication.translate("MainWindow", "Registers", None, QtGui.QApplication.UnicodeUTF8))
         self.action_NextStep.setText(QtGui.QApplication.translate("MainWindow", "Next Step", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_NextStep.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
         self.action_MoreSteps.setText(QtGui.QApplication.translate("MainWindow", "More Steps", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Run.setText(QtGui.QApplication.translate("MainWindow", "Run", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Forwarding.setText(QtGui.QApplication.translate("MainWindow", "Forwarding", None, QtGui.QApplication.UnicodeUTF8))

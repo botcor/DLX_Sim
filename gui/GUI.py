@@ -3,6 +3,8 @@
 # Import PySide classes
 import sys
 sys.path.append('./src')
+sys.path.append('./test')
+from Stubs import *
 from PySide.QtCore import *
 from PySide.QtGui import *
 from MainWindow1 import *
@@ -26,6 +28,7 @@ def setOpenFileName():
     return fileName
 
 def goNext():
+    myStubSIM.NextStep(True)
     pipemod.setContent()
 
 def quitApp():
@@ -54,9 +57,10 @@ if __name__ == "__main__":
     mySW = ControlMainWindow()
     mySW.show()
     mySIM = Simulator()
+    myStubSIM = StubSim()
     # construct and connect the models to the views
     progmod = ProgramModel(mySW.ui.programview)
-    pipemod = PipelineModel(mySW.ui.pipeview)
+    pipemod = PipelineModel(mySW.ui.pipeview, myStubSIM)
     regmod = RegisterModel(mySW.ui.registerview)
     memmod = MemoryModel(mySW.ui.memoryview)
     # setup the initial content of the models

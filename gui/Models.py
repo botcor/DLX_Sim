@@ -29,7 +29,7 @@ class ProgramModel(Model):
         self.model.appendRow(item4)
 
 class PipelineModel(Model):
-    def __init__(self,model_of):
+    def __init__(self,model_of, pSim):
         self.model = QtGui.QGraphicsScene(model_of)
         model_of.setScene(self.model)
         self.Line_Height = 20
@@ -39,7 +39,7 @@ class PipelineModel(Model):
         self.Font = QtGui.QFont("Helvetica")
         self.Font.setPointSize(11)
         self.Brush1 = QtGui.QBrush(QtCore.Qt.yellow, QtCore.Qt.SolidPattern)
-        self.Turn = 0
+        self.pSim = pSim
     def setContentInitial(self):
         self.model.addLine(0,0,0,400,self.Pen)
         self.model.addLine(150,0,150,400,self.Pen)
@@ -48,11 +48,11 @@ class PipelineModel(Model):
         self.model.addText("Command", self.Font)
     def setContent(self):
         
-        CurserX = 150 + self.Colm_Width * self.Turn
-        CurserY = 30 + self.Line_Height * self.Turn
+        CurserX = 150 + self.Colm_Width * self.pSim.Cycle
+        CurserY = 30 + self.Line_Height * self.pSim.Cycle
         # add the new content of the current turn
         # add the new command and number of the current clock cycle
-        new_command = self.model.addText("neuer Befehl")
+        new_command = self.model.addText(self.pSim.Commands[self.pSim.CommandIndex])
         new_command.setY(CurserY)
         new_num = self.model.addText(str(self.Turn),self.Font)
         new_num.setX(CurserX)
@@ -64,7 +64,6 @@ class PipelineModel(Model):
         # add the rectangles
         self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
         self.Turn += 1
-            
 
 class MemoryModel(Model):
     def setContent(self,storage):
