@@ -39,6 +39,10 @@ class PipelineModel(Model):
         self.Font = QtGui.QFont("Helvetica")
         self.Font.setPointSize(11)
         self.Brush1 = QtGui.QBrush(QtCore.Qt.yellow, QtCore.Qt.SolidPattern)
+        self.Brush2 = QtGui.QBrush(QtCore.Qt.orange, QtCore.Qt.SolidPattern)
+        self.Brush3 = QtGui.QBrush(QtCore.Qt.red, QtCore.Qt.SolidPattern)
+        self.Brush4 = QtGui.QBrush(QtCore.Qt.blue, QtCore.Qt.SolidPattern)
+        self.Brush1 = QtGui.QBrush(QtCore.Qt.green, QtCore.Qt.SolidPattern)
         self.pSim = pSim
     def setContentInitial(self):
         self.model.addLine(0,0,0,400,self.Pen)
@@ -54,7 +58,7 @@ class PipelineModel(Model):
         # add the new command and number of the current clock cycle
         new_command = self.model.addText(self.pSim.Commands[self.pSim.CommandIndex])
         new_command.setY(CurserY)
-        new_num = self.model.addText(str(self.Turn),self.Font)
+        new_num = self.model.addText(str(self.pSim.Cycle),self.Font)
         new_num.setX(CurserX)
         # extend the two top lines
         self.model.addLine(CurserX + self.Colm_Width, 25, self.Colm_Width, 25, self.Pen)
@@ -62,7 +66,28 @@ class PipelineModel(Model):
         # add the dotted clock cycle line
         self.model.addLine(CurserX + self.Colm_Width, 0, CurserX + self.Colm_Width, 400, self.Pen1)
         # add the rectangles
-        self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
+        if not self.pSim.isStall:
+            if self.pSim.Cycle < 5:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
+            if self.pSim.Cycle < 4:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
+            if self.pSim.Cycle < 3:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush3)
+            if self.pSim.Cycle < 2:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush2)
+            if self.pSim.Cycle < 1:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
+        else
+            if self.pSim.Cycle < 5:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
+            if self.pSim.Cycle < 4:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
+            if self.pSim.Cycle < 3:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush3)
+            if self.pSim.Cycle < 2:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush2)
+            if self.pSim.Cycle < 1:
+                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
         self.Turn += 1
 
 class MemoryModel(Model):

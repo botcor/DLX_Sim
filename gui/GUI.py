@@ -28,7 +28,7 @@ def setOpenFileName():
     return fileName
 
 def goNext():
-    myStubSIM.NextStep(True)
+    myStubSIM.NextStep(False)
     pipemod.setContent()
 
 def quitApp():
