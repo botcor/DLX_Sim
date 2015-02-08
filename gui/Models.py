@@ -38,11 +38,11 @@ class PipelineModel(Model):
         self.Pen1 = QtGui.QPen(QtCore.Qt.DotLine)
         self.Font = QtGui.QFont("Helvetica")
         self.Font.setPointSize(11)
-        self.Brush1 = QtGui.QBrush(QtCore.Qt.yellow, QtCore.Qt.SolidPattern)
-        self.Brush2 = QtGui.QBrush(QtCore.Qt.orange, QtCore.Qt.SolidPattern)
-        self.Brush3 = QtGui.QBrush(QtCore.Qt.red, QtCore.Qt.SolidPattern)
-        self.Brush4 = QtGui.QBrush(QtCore.Qt.blue, QtCore.Qt.SolidPattern)
-        self.Brush1 = QtGui.QBrush(QtCore.Qt.green, QtCore.Qt.SolidPattern)
+        self.Brush1 = QtGui.QBrush(QtGui.QColor(255,255,0), QtCore.Qt.SolidPattern)
+        self.Brush2 = QtGui.QBrush(QtGui.QColor(255,174,0), QtCore.Qt.SolidPattern)
+        self.Brush3 = QtGui.QBrush(QtGui.QColor(242,58,58), QtCore.Qt.SolidPattern)
+        self.Brush4 = QtGui.QBrush(QtGui.QColor(82,69,255), QtCore.Qt.SolidPattern)
+        self.Brush5 = QtGui.QBrush(QtGui.QColor(0,153,0), QtCore.Qt.SolidPattern)
         self.pSim = pSim
     def setContentInitial(self):
         self.model.addLine(0,0,0,400,self.Pen)
@@ -51,9 +51,8 @@ class PipelineModel(Model):
         self.model.addLine(0,25,190,25,self.Pen)
         self.model.addText("Command", self.Font)
     def setContent(self):
-        
         CurserX = 150 + self.Colm_Width * self.pSim.Cycle
-        CurserY = 30 + self.Line_Height * self.pSim.Cycle
+        CurserY = 30 + self.Line_Height * self.pSim.CommandIndex
         # add the new content of the current turn
         # add the new command and number of the current clock cycle
         new_command = self.model.addText(self.pSim.Commands[self.pSim.CommandIndex])
@@ -67,28 +66,52 @@ class PipelineModel(Model):
         self.model.addLine(CurserX + self.Colm_Width, 0, CurserX + self.Colm_Width, 400, self.Pen1)
         # add the rectangles
         if not self.pSim.isStall:
-            if self.pSim.Cycle < 5:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
-            if self.pSim.Cycle < 4:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
-            if self.pSim.Cycle < 3:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush3)
-            if self.pSim.Cycle < 2:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush2)
-            if self.pSim.Cycle < 1:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
-        else
-            if self.pSim.Cycle < 5:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
-            if self.pSim.Cycle < 4:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
-            if self.pSim.Cycle < 3:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush3)
-            if self.pSim.Cycle < 2:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush2)
-            if self.pSim.Cycle < 1:
-                self.model.addRect(CurserX, CurserY,self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
-        self.Turn += 1
+            if self.pSim.CommandIndex > 4:
+                self.model.addRect(CurserX, CurserY - 4 * self.Line_Height, self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
+                label = self.model.addText("WB")
+                label.setX(CurserX)
+                label.setY(CurserY - 4 * self.Line_Height)
+            if self.pSim.CommandIndex > 3:
+                self.model.addRect(CurserX, CurserY - 3 * self.Line_Height, self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
+                label = self.model.addText("MEM")
+                label.setX(CurserX)
+                label.setY(CurserY - 3 * self.Line_Height)
+            if self.pSim.CommandIndex > 2:
+                self.model.addRect(CurserX, CurserY - 2 * self.Line_Height, self.Colm_Width, self.Line_Height, self.Pen, self.Brush3)
+                label = self.model.addText("EX")
+                label.setX(CurserX)
+                label.setY(CurserY - 2 * self.Line_Height)
+            if self.pSim.CommandIndex > 1:
+                self.model.addRect(CurserX, CurserY - 1 * self.Line_Height, self.Colm_Width, self.Line_Height, self.Pen, self.Brush2)
+                label = self.model.addText("ID")
+                label.setX(CurserX)
+                label.setY(CurserY - 1 * self.Line_Height)
+            if self.pSim.CommandIndex > 0:
+                self.model.addRect(CurserX, CurserY - 0 * self.Line_Height, self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
+                label = self.model.addText("IF")
+                label.setX(CurserX)
+                label.setY(CurserY - 0 * self.Line_Height)
+        else:
+            if self.pSim.CommandIndex > 3:
+                self.model.addRect(CurserX, CurserY - 3 * self.Line_Height, self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
+                label = self.model.addText("WB")
+                label.setX(CurserX)
+                label.setY(CurserY - 3 * self.Line_Height)
+            if self.pSim.CommandIndex > 2:
+                self.model.addRect(CurserX, CurserY - 2 * self.Line_Height, self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
+                label = self.model.addText("MEM")
+                label.setX(CurserX)
+                label.setY(CurserY - 2 * self.Line_Height)
+            if self.pSim.CommandIndex > 1:
+                self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush2)
+                label = self.model.addText("Stall")
+                label.setX(CurserX)
+                label.setY(CurserY - 1 * self.Line_Height)
+            if self.pSim.CommandIndex > 0:
+                self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
+                label = self.model.addText("Stall")
+                label.setX(CurserX)
+                label.setY(CurserY - 0 * self.Line_Height)
 
 class MemoryModel(Model):
     def setContent(self,storage):

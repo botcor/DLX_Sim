@@ -27,8 +27,25 @@ def setOpenFileName():
     mySIM.collectData(fileName[0])
     return fileName
 
+def Reset():
+    # construct and connect the models to the views
+    progmod = ProgramModel(mySW.ui.programview)
+    pipemod = PipelineModel(mySW.ui.pipeview, myStubSIM)
+    regmod = RegisterModel(mySW.ui.registerview)
+    memmod = MemoryModel(mySW.ui.memoryview)
+    # setup the initial content of the models
+    pipemod.setContentInitial()
+    # actually reset the DLX
+
 def goNext():
     myStubSIM.NextStep(False)
+    pipemod.setContent()
+
+def goMore():
+    num_steps = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert a Number:", 2)
+
+def Run():
+    myStubSIM.NextStep(True)
     pipemod.setContent()
 
 def quitApp():
@@ -67,7 +84,10 @@ if __name__ == "__main__":
     pipemod.setContentInitial()
     # connect the menu actions to the custom functions
     mySW.ui.action_LoadProgram.triggered.connect(setOpenFileName)
+    mySW.ui.action_ResetDLX.triggered.connect(Reset)
     mySW.ui.action_NextStep.triggered.connect(goNext)
+    mySW.ui.action_MoreSteps.triggered.connect(goMore)
+    mySW.ui.action_Run.triggered.connect(Run)
     mySW.ui.action_ProgramView.toggled.connect(showProgram)
     mySW.ui.action_RegisterView.toggled.connect(showRegisters)
     mySW.ui.action_MemoryView.toggled.connect(showMemory)
