@@ -20,15 +20,15 @@ class TestCasesReg(unittest.TestCase):
     def test_regb(self):
         mylogger.info("TestCase: test_regb START")
         for i in range(1,32):
-            self.regb.setRegByID(i,self.a)
+            self.regb.getRegByID(i).setVal(self.a)
         for i in range(1,32):
-            self.assertEqual(self.regb.getRegByID(i).int, 255 , "Register has incorrect value")
+            self.assertEqual(self.regb.getRegByID(i).getVal().int, 255 , "Register has incorrect value")
         mylogger.info("TestCase: test_regb SUCCESSFUL")
 
     def test_reg0(self):
         mylogger.info("TestCase: test_reg0 START")
-        self.regb.setRegByID(0,self.a)
-        self.assertEqual(self.regb.getRegByID(0).int, 0 , "Register0 ist not 0")
+        self.regb.getRegByID(0).setVal(self.a)
+        self.assertEqual(self.regb.getRegByID(0).getVal().int, 0 , "Register0 ist not 0")
         mylogger.info("TestCase: test_reg0 SUCCSESSFUL")      
 
 
