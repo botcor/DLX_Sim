@@ -390,12 +390,21 @@ class DLX_Pipeline:
         # save the opcode aside (not DLX specified)
         __IR = self.insFIFO[4]
         __OP = BitArray( __IR[0:6], length=6 )
+        if ( __OP.uint == 0x00 ):
+            # R-Type
+            __rd = self.insFIFO[3][16:20].uint
+        elif ( __OP.uint <= 0x03 ):
+            # J-Type
+            __rd = 0
+        else:
+            # I-Type
+            __rd = self.self.insFIFO[3][11:16].uint
 
         if not( __OP.uint == 0x2B or __OP.uint == 0x29 or __OP.uint == 0x28 ):
-            self.regbank.getRegById(  ).setVal( self.LMD.getVal() )
+            self.regbank.getRegByID( __rd ).setVal( self.LMD.getVal() )
         return 0
 
-    def detectDataHazard():
+    def detectDataHazard(self):
         __OP_mem = self.insFIFO[3][0:6]
         __OP_id = self.insFIFO[1][0:6]
         __OP_ex = self.insFIFO[2][0:6]
@@ -438,7 +447,7 @@ class DLX_Pipeline:
         if( __rd_mem ==  __rs1_id ):
             # Hazard between ID and MEM forward to A
             self.fDataHazard = True
-            if(fForwarding == True):
+            if(self.fForwarding == True):
                 # forward LMD to A
                 mylogger.debug("FWD: LMD -> A")
             else:
@@ -448,7 +457,7 @@ class DLX_Pipeline:
         elif ( __rd_mem == __rs2_id ):
             # Hazard between ID and MEM forward to B
             self.fDataHazard = True
-            if(fForwarding == True):
+            if(self.fForwarding == True):
                 # forward LMD to B
                 mylogger.debug("FWD: LMD -> B")
             else:

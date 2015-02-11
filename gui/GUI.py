@@ -68,8 +68,11 @@ def showPipeline(checked):
         pipemod.setContent()
 
 def changeMemSize():
-    new_size = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert a Number:", mySIM.pipeline.storage.size)
+    new_size = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert the new size:", mySIM.pipeline.storage.size)
+    #mySIM.pipeline.storage.size = ne_size
 
+def switchFWD(checked):
+    
 
 if __name__ == "__main__":
     # general stuff
