@@ -20,8 +20,10 @@ class TestCasesPipe_IF(unittest.TestCase):
         #fill data storage with testvalues: 0xDEADBEEF, 0xFACEBAFF
         cls.ins1 = BitArray(hex='0xdeadbeef')
         cls.ins2 = BitArray(hex='0xFACEBAFF')
+        cls.ins3 = BitArray(hex='0xABCDE000')
         cls.storage.setW(0, cls.ins1)
         cls.storage.setW(4, cls.ins2)
+        cls.storage.setW(8, cls.ins3)
         cls.alu = 0
         cls.pipe = DLX_Pipeline(cls.storage, cls.alu, cls.regb)
         return super().setUpClass()
@@ -31,27 +33,17 @@ class TestCasesPipe_IF(unittest.TestCase):
         mylogger.info("TestCase: test_doIF START")
         self.pipe.doIF()
         self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0xDEADBEEF').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint + 4 , "Wrong Value in NPC")
-        #self.assertEqual(self.pipe.__insFIFO[0], self.pipe.IR , "")
+        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint, "Wrong Value in NPC")
+        self.assertEqual(self.pipe.insFIFO[0], self.pipe.IR.getVal() , "")
         mylogger.info("TestCase: test_doIF SUCCESSFUL")
 
     def test_doIF2x(self):
         mylogger.info("TestCase: test_doIF2x START")
         self.pipe.doIF()
         self.pipe.doIF()
-        self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0xDEADBEEF').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint + 4 , "Wrong Value in NPC")
-        #self.assertEqual(self.pipe.__insFIFO[0], self.pipe.IR , "")
-        mylogger.info("TestCase: test_doIF2x SUCCESSFUL")
-
-    def test_doIF2xPC(self):
-        mylogger.info("TestCase: test_doIF2x START")
-        self.pipe.doIF()
-        self.pipe.PC.setVal( BitArray( uint=( self.pipe.PC.getVal().uint + 4), length=32 ) )
-        self.pipe.doIF()
-        self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0xFACEBAFF').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, 8, "Wrong Value in NPC")
-        #self.assertEqual(self.pipe.__insFIFO[0], self.pipe.IR , "")
+        self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0xABCDE000').hex , "Wrong Value in IR")
+        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint, "Wrong Value in NPC")
+        self.assertEqual(self.pipe.insFIFO[0], self.pipe.IR.getVal() , "")
         mylogger.info("TestCase: test_doIF2x SUCCESSFUL")
 
     @classmethod
