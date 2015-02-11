@@ -32,24 +32,27 @@ class DLX_Pipeline:
         mylogger.info("Pipeline Stages: %s",self.stages)
         mylogger.info("Pipeline Registers: %s",self.piperegs)
         self.insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
-        self.rs1FIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
         self.storage = storage
         self.alu = alu
         self.regbank = regbank
         # define the Pipeline Registers
         self.PC = DLX_Register(name="PC")
         self.NPC = DLX_Register(name="NPC")
+        self.NPC_2 = DLX_Register(name="NPC_2")
         self.IR = DLX_Register(name="IR")
         self.A = DLX_Register(name="A")
         self.B = DLX_Register(name="B")
+        self.B_2 = DLX_Register(name="B_2")
         self.Imm = DLX_Register(name="Imm")
         self.Cond = DLX_Register(name="Cond")
         self.AO = DLX_Register(name="AO")
         self.LMD = DLX_Register(name="LMD")
         # define the Flags and Options
+        self.fJump = 'false'
         self.fForwarding = 'true'
         self.fDataHazard = 'false'
         self.fCtrlHazard = 'false'
+        self.cStallCnt = 0
 
     def __shiftFIFO(self, n):
         self.insFIFO[:n] + self.insFIFO[n:]
@@ -67,8 +70,16 @@ class DLX_Pipeline:
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
         # store the Instruction to insFIFO as well
         self.insFIFO[0] = self.IR.getVal()
-        
-        self.PC.setVal( BitArray( uint=( self.NPC.getVal().uint) ) )
+        # 
+        if not(self.StallCnt > 0):
+            # determin the next Program Counter
+            self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
+            if (self.fJump == True):
+                self.PC.setVal( self.AO.getVal() )
+            else:
+                self.PC.getVal( self.NPC.setVal() )
+        else:
+            self.StallCnt -= 1
         
         
     def doID(self):
@@ -112,6 +123,9 @@ class DLX_Pipeline:
             # excluding SLLI, SRAI, SRLI along with all R-Type Instructions
             # -->    for ADDUI, SUBUI, ANDI, ORI, XORI,    SEQUI, SNEUI, SLTUI, SGTUI, SLEUI, SGEUI,   LBU, LHU
             self.Imm.setVal( self.__extend0( self.Imm.getVal() ) )
+
+        # forward the NPC Register to the EX stage
+        self.NPC_2.setVal( self.NPC.getVal() )
         return 0
 
     def doEX(self):
@@ -129,13 +143,13 @@ class DLX_Pipeline:
             # func is stored in the Register Imm
             if (self.Imm.getVal().uint == 0x20):
                 #ADD
-                self.AO.setVal( self.alu.ADD(self.A.getVal(), self.B.getVal() ) )
+                self.AO.setVal( self.alu.ADD(self.A.getVal(), self.B.getVal()) )
             elif (self.Imm.getVal().uint == 0x21):
                 #ADDU
-                self.AO.setVal( self.alu.ADDU(self.A.getVal(), self.B.getVal() ) )
+                self.AO.setVal( self.alu.ADDU(self.A.getVal(), self.B.getVal()) )
             elif (self.Imm.getVal().uint == 0x22):
                 #SUB
-                self.AO.setVal( self.alu.SUB(self.A.getVal(), self.B.getVal() ) )
+                self.AO.setVal( self.alu.SUB(self.A.getVal(), self.B.getVal()) )
             elif (self.Imm.getVal().uint == 0x23):
                 #SUBU
                 self.AO.setVal( self.alu.SUBU(self.A.getVal(), self.B.getVal()) )
@@ -216,16 +230,18 @@ class DLX_Pipeline:
                 #BEQZ
                 if(self.A.getVal().uint == 0x00):
                     self.Cond.setVal(BitArray(hex='0xAAAA'))
-                    self.AO.setVal( self.alu.ADD( self.NPC.getVal() ), self.Imm.getVal() )
+                    self.AO.setVal( self.alu.ADD( self.NPC_2.getVal() ), self.Imm.getVal() )
                 else:
                     self.Cond.setVal(BitArray(hex='0x5555'))
             elif (__OP.uint == 0x05):
                 #BNEZ
                 if(self.A.getVal().uint != 0x00):
                     self.Cond.setVal(BitArray(hex='0xAAAA'))
+                    self.AO.setVal( self.alu.ADD( self.NPC_2.getVal() ), self.Imm.getVal() )
                 else:
                     self.Cond.setVal(BitArray(hex='0x5555'))
-                #self.AO.setVal( self.alu.ADD(self.PC ) )
+            elif not( __OP.uint == 0x04 | __OP.uint == 0x05 ):
+                self.Cond.setVal( hex='0x5555' )
             elif (__OP.uint == 0x12):
                 #JR
                 self.AO.setVal( BitArray( uint=( self.A.getVal().uint ) ) )
@@ -308,6 +324,7 @@ class DLX_Pipeline:
             elif ( __OP.uint == 0x2B | __OP.uint == 0x29 | __OP.uint == 0x28):
                 #SW SH SB
                 self.AO.setVal( self.alu.ADDU(self.A.getVal(), self.Imm.getVal()) )
+                self.B_2.setVal( self.B.getVal() )
             else:
                 mylogger.debug("Fehler in doEX R-Type")
         return 0
@@ -342,9 +359,26 @@ class DLX_Pipeline:
         elif ( __OP.uint == 0x25 ):
             # LHU
             self.LMD.setVal( self.__extend0( self.storage.getH( self.AO.getVal().uint ) ) )
-        elif (__OP.uint == 0x12 | __OP.uint == 0x13 | __OP.uint == 0x04 | __OP.uint == 0x05 | __OP.uint == 0x02 | __OP.uint == 0x03 ):
-                 # JR                    JALR                BEQZ                BNEZ                  J                     JAL
-            self.NPC.setVal( self.AO.getVal() )
+        elif ( __OP.uint == 0x2B ):
+            # SW
+            self.storage.setW( self.B_2.getVal(), self.AO.getVal().uint )
+        elif ( __OP.uint == 0x29 ):
+            # SH
+            self.storage.setH( self.B_2.getVal(), self.AO.getVal().uint )
+        elif ( __OP.uint == 0x28 ):
+            # SB
+            self.storage.setB( self.B_2.getVal(), self.AO.getVal().uint )
+        elif ( __OP.uint == 0x12 | __OP.uint == 0x13 | __OP.uint == 0x02 | __OP.uint == 0x03 ):
+                 # JR                    JALR                J                     JAL
+            self.fJump = True
+        elif ( __OP.uint == 0x04 | __OP.uint == 0x05 ):
+            #  BEQZ                BNEZ  
+            if (self.Cond.getVal().hex == '0x5555'):
+                self.fJump = True
+            else:
+                self.fJump = False
+        elif not( __OP.uint == 0x04 | __OP.uint == 0x05 | __OP.uint == 0x12 | __OP.uint == 0x13 | __OP.uint == 0x02 | __OP.uint == 0x03):
+            self.fJump = False
         else:
             self.LMD.setVal( self.AO.getVal() )
         return 0
@@ -355,40 +389,10 @@ class DLX_Pipeline:
         __IR = self.insFIFO[4]
         __OP = BitArray( __IR[0:6], length=6 )
 
-        if ( __OP.uint == 0x00 ):
-            # R-Type
-            # get reference to rd
-            __rd = self.regbank.getRegByID( __IR.getVal()[16:21].uint )
-        elif ( __OP.uint <= 0x03 ):
-            # J-Type
-            # there is no rd register
-            __rd = 0
-        else:
-            # I-Type
-            # get immediate   which is @      v
-            self.Imm.setVal( self.IR.getVal()[16:32] )
-            # get reference to rd
-            __rd = self.regbank.getRegByID( __IR.getVal()[11:16].uint )
-
-        # get reference to rs1
-        __rs1 = self.regbank.getRegByID( __IR.getVal()[6:11].uint )
+        if not( __OP.uint == 0x2B | __OP.uint == 0x29 | __OP.uint == 0x28 ):
+            self.regbank.getRegById(  ).setVal( self.LMD.getVal() )
         
-        
-            
-        # dependent on opcode do
-        #   write value to storage @ rs1 + Imm
-        #   write value to register rd
-        if( __OP.uint == '0x2B' ):
-            # SW
-            self.storage.setW( self.LMD.getVal, __rs1.getVal.int + self.Imm.getVal().int )
-        elif ( __OP.uint == '0x29' ):
-            # SH
-            self.storage.setH( self.LMD.getVal, __rs1.getVal.int + self.Imm.getVal().int )
-        elif ( __OP.uint == '0x28' ):
-            # SB
-            self.storage.setB( self.LMD.getVal, __rs1.getVal.int + self.Imm.getVal().int )
-        else:
-            self.regbank.getRegByID(__rd).setVal( self.LMD.getVal() )
+        return 0
 
     def detectDataHazard():
         __OP_mem = self.insFIFO[3][0:6]
@@ -432,16 +436,32 @@ class DLX_Pipeline:
         # checking for hazards
         if( __rd_mem ==  __rs1_id ):
             # Hazard between ID and MEM forward to A
-            nurdasseswiederfunktioniert=0
+            self.fDataHazard = True
+            if(fForwarding == True):
+                # forward LMD to A
+            else:
+                # do two stalls
+                self.StallCnt = 2
+            mylogger.debug("DataHazard: MEM -> ID(A)")
         elif ( __rd_mem == __rs2_id ):
             # Hazard between ID and MEM forward to B
-            nurdasseswiederfunktioniert=0
+            self.fDataHazard = True
+            if(fForwarding == True):
+                # forward LMD to A
+            else:
+                # do two stalls
+                self.StallCnt = 2
+            mylogger.debug("DataHazard: MEM -> ID(B)")
         elif( __rd_ex == __rs1_id ):
             # Hazard between ID and EX forward to A
-            nurdasseswiederfunktioniert=0
+            self.fDataHazard = True
+            mylogger.debug("DataHazard: EX -> ID(A)")
         elif( __rd_ex == __rs2_id ):
             # Hazard between ID and EX forward to B
-            nurdasseswiederfunktioniert=0
+            self.fDataHazard = True
+            mylogger.debug("DataHazard: EX -> ID(A)")
+        else:
+            self.fDataHazard = False
         
 
     def doPipeNext(self):
@@ -457,5 +477,22 @@ class DLX_Pipeline:
 
         self.__shiftFIFO(1)
 
-    def getPipeRegByName(self):
-        return 0
+    def getPipeRegByName(self, name):
+        if name == 'PC':
+            return self.PC
+        elif name == 'IR':
+            return self.IR
+        elif name == 'A':
+            return self.A
+        elif name == 'B':
+            return self.B
+        elif name == 'Imm':
+            return self.Imm
+        elif name == 'Cond':
+            return self.Cond
+        elif name == 'AO':
+            return self.AO
+        elif name == 'LMD':
+            return self.LMD
+        else
+            return 0
