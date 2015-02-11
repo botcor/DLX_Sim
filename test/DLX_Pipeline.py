@@ -502,25 +502,3 @@ class DLX_Pipeline:
         else:
             return 0
 
-    def ResetPipeline(self):
-        self.insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
-        # reset the Pipeline Registers
-        self.PC.setVal(BitArray(uint=0, length=32))
-        self.NPC.setVal(BitArray(uint=0, length=32))
-        self.NPC_2.setVal(BitArray(uint=0, length=32))
-        self.IR.setVal(BitArray(uint=0, length=32))
-        self.A.setVal(BitArray(uint=0, length=32))
-        self.B.setVal(BitArray(uint=0, length=32))
-        self.Imm.setVal(BitArray(uint=0, length=32))
-        self.Cond.setVal(BitArray(uint=0, length=32))
-        self.AO.setVal(BitArray(uint=0, length=32))
-        self.DO.setVal(BitArray(uint=0, length=32))
-        self.LMD.setVal(BitArray(uint=0, length=32))
-        # reset the Flags and Options
-        self.fJump = False
-        self.fForwarding = True
-        self.fDataHazard = False
-        self.fCtrlHazard = False
-        self.cStallCnt = 0
-        
-
