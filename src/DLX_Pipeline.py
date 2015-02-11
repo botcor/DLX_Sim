@@ -28,7 +28,7 @@ class DLX_Pipeline:
 
     def __init__(self, storage, alu, regbank):        
         self.stages = ['IF','ID','EX','MEM','WB']
-        self.piperegs = ['PC','NPC','IR','A','B','Imm','Cond','AO','LMD']
+        self.piperegs = ['PC','NPC','IR','A','B','Imm','Cond','AO','DO','LMD']
         mylogger.info("Pipeline Stages: %s",self.stages)
         mylogger.info("Pipeline Registers: %s",self.piperegs)
         self.insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
@@ -42,10 +42,10 @@ class DLX_Pipeline:
         self.IR = DLX_Register(name="IR")
         self.A = DLX_Register(name="A")
         self.B = DLX_Register(name="B")
-        self.B_2 = DLX_Register(name="B_2")
         self.Imm = DLX_Register(name="Imm")
         self.Cond = DLX_Register(name="Cond")
         self.AO = DLX_Register(name="AO")
+        self.DO = DLX_Register(name="DO")
         self.LMD = DLX_Register(name="LMD")
         # define the Flags and Options
         self.fJump = 'false'
@@ -324,7 +324,7 @@ class DLX_Pipeline:
             elif ( __OP.uint == 0x2B | __OP.uint == 0x29 | __OP.uint == 0x28):
                 #SW SH SB
                 self.AO.setVal( self.alu.ADDU(self.A.getVal(), self.Imm.getVal()) )
-                self.B_2.setVal( self.B.getVal() )
+                self.DO.setVal( self.B.getVal() )
             else:
                 mylogger.debug("Fehler in doEX R-Type")
         return 0
@@ -361,13 +361,13 @@ class DLX_Pipeline:
             self.LMD.setVal( self.__extend0( self.storage.getH( self.AO.getVal().uint ) ) )
         elif ( __OP.uint == 0x2B ):
             # SW
-            self.storage.setW( self.B_2.getVal(), self.AO.getVal().uint )
+            self.storage.setW( self.DO.getVal(), self.AO.getVal().uint )
         elif ( __OP.uint == 0x29 ):
             # SH
-            self.storage.setH( self.B_2.getVal(), self.AO.getVal().uint )
+            self.storage.setH( self.DO.getVal(), self.AO.getVal().uint )
         elif ( __OP.uint == 0x28 ):
             # SB
-            self.storage.setB( self.B_2.getVal(), self.AO.getVal().uint )
+            self.storage.setB( self.DO.getVal(), self.AO.getVal().uint )
         elif ( __OP.uint == 0x12 | __OP.uint == 0x13 | __OP.uint == 0x02 | __OP.uint == 0x03 ):
                  # JR                    JALR                J                     JAL
             self.fJump = True
@@ -439,6 +439,7 @@ class DLX_Pipeline:
             self.fDataHazard = True
             if(fForwarding == True):
                 # forward LMD to A
+                mylogger.debug("FWD: LMD -> A")
             else:
                 # do two stalls
                 self.StallCnt = 2
@@ -447,7 +448,8 @@ class DLX_Pipeline:
             # Hazard between ID and MEM forward to B
             self.fDataHazard = True
             if(fForwarding == True):
-                # forward LMD to A
+                # forward LMD to B
+                mylogger.debug("FWD: LMD -> B")
             else:
                 # do two stalls
                 self.StallCnt = 2
@@ -492,6 +494,8 @@ class DLX_Pipeline:
             return self.Cond
         elif name == 'AO':
             return self.AO
+        elif name == 'DO':
+            return self.DO
         elif name == 'LMD':
             return self.LMD
         else
