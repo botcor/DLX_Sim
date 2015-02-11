@@ -231,19 +231,19 @@ class DLX_Pipeline:
             if (__OP.uint == 0x04):
                 #BEQZ
                 if(self.A.getVal().uint == 0x00):
-                    self.Cond.setVal(BitArray(hex='0xAAAA'))
+                    self.Cond.setVal(BitArray(hex='0x0001'))
                     self.AO.setVal( self.alu.ADD( self.NPC_2.getVal() ), self.Imm.getVal() )
                 else:
-                    self.Cond.setVal(BitArray(hex='0x5555'))
+                    self.Cond.setVal(BitArray(hex='0x0000'))
             elif (__OP.uint == 0x05):
                 #BNEZ
                 if(self.A.getVal().uint != 0x00):
-                    self.Cond.setVal(BitArray(hex='0xAAAA'))
+                    self.Cond.setVal(BitArray(hex='0x0001'))
                     self.AO.setVal( self.alu.ADD( self.NPC_2.getVal() ), self.Imm.getVal() )
                 else:
-                    self.Cond.setVal(BitArray(hex='0x5555'))
+                    self.Cond.setVal(BitArray(hex='0x0000'))
             elif not( __OP.uint == 0x04 or __OP.uint == 0x05 ):
-                self.Cond.setVal(BitArray(hex='0x5555'))
+                self.Cond.setVal(BitArray(hex='0x0000'))
             elif (__OP.uint == 0x12):
                 #JR
                 self.AO.setVal( BitArray( uint=( self.A.getVal().uint ) ) )
@@ -375,7 +375,7 @@ class DLX_Pipeline:
             self.fJump = True
         elif ( __OP.uint == 0x04 or __OP.uint == 0x05 ):
             #  BEQZ                BNEZ  
-            if (self.Cond.getVal().hex == '0x5555'):
+            if (self.Cond.getVal().hex == '0x0001'):
                 self.fJump = True
             else:
                 self.fJump = False

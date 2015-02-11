@@ -68,11 +68,17 @@ def showPipeline(checked):
         pipemod.setContent()
 
 def changeMemSize():
-    new_size = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert the new size:", mySIM.pipeline.storage.size)
-    #mySIM.pipeline.storage.size = ne_size
+    new_size = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert the new size:", mySIM.pipe.storage.size)
+    #mySIM.pipeline.storage.size = new_size
 
 def switchFWD(checked):
-    
+    dialog = QtGui.QMessageBox(QtGui.QMessageBox.Information, "Question", "To Switch on/off the Forwarding the DLX has to be reset. Do you really want to do so?", QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel, mySW, 0)
+    answer = dialog.exec()
+    print(answer)
+
+def Reset():
+    dialog = QtGui.QMessageBox(QtGui.QMessageBox.Information, "Question", "Do you really want to reset the DLX?", QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel, mySW, 0)
+    answer = dialog.exec()
 
 if __name__ == "__main__":
     # general stuff
@@ -99,5 +105,7 @@ if __name__ == "__main__":
     mySW.ui.action_MemoryView.toggled.connect(showMemory)
     mySW.ui.action_PipelineView.toggled.connect(showPipeline)
     mySW.ui.action_ProgramView.setChecked(True)
+    mySW.ui.action_Forwarding.toggled.connect(switchFWD)
+    mySW.ui.action_MemorySize.triggered.connect(changeMemSize)
     sys.exit(app.exec_())
 
