@@ -391,7 +391,6 @@ class DLX_Pipeline:
 
         if not( __OP.uint == 0x2B | __OP.uint == 0x29 | __OP.uint == 0x28 ):
             self.regbank.getRegById(  ).setVal( self.LMD.getVal() )
-        
         return 0
 
     def detectDataHazard():
@@ -498,5 +497,6 @@ class DLX_Pipeline:
             return self.DO
         elif name == 'LMD':
             return self.LMD
-        else
+        else:
             return 0
+
