@@ -48,10 +48,10 @@ class DLX_Pipeline:
         self.DO = DLX_Register(name="DO")
         self.LMD = DLX_Register(name="LMD")
         # define the Flags and Options
-        self.fJump = 'false'
-        self.fForwarding = 'true'
-        self.fDataHazard = 'false'
-        self.fCtrlHazard = 'false'
+        self.fJump = False
+        self.fForwarding = True
+        self.fDataHazard = False
+        self.fCtrlHazard = False
         self.cStallCnt = 0
 
     def __shiftFIFO(self, n):
@@ -111,7 +111,7 @@ class DLX_Pipeline:
             self.Imm.setVal( self.IR.getVal()[16:32] )
 
         # determine the kind of extension and extend the Imm value
-        if ( __OP.uint == 0x08 or __OP.uint == 0x0A or ( __OP.uint >= 0x18 & __OP.uint <= 0x1D) or
+        if ( __OP.uint == 0x08 or __OP.uint == 0x0A or ( __OP.uint >= 0x18 and __OP.uint <= 0x1D) or
                 __OP.uint == 0x02 or __OP.uint == 0x03 or __OP.uint == 0x04 or __OP.uint == 0x05):
             # for ADDI,        SUBI,       SEQI, SNEI, SLTI, SGTI, SLEI, SGEI,          J, JAL,  BEQZ, BNEZ
             self.Imm.setVal( self.__extend(self.Imm.getVal() ) )
@@ -499,4 +499,26 @@ class DLX_Pipeline:
             return self.LMD
         else:
             return 0
+
+    def ResetPipeline(self):
+        self.insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
+        # reset the Pipeline Registers
+        self.PC.setVal(BitArray(uint=0, length=32))
+        self.NPC.setVal(BitArray(uint=0, length=32))
+        self.NPC_2.setVal(BitArray(uint=0, length=32))
+        self.IR.setVal(BitArray(uint=0, length=32))
+        self.A.setVal(BitArray(uint=0, length=32))
+        self.B.setVal(BitArray(uint=0, length=32))
+        self.Imm.setVal(BitArray(uint=0, length=32))
+        self.Cond.setVal(BitArray(uint=0, length=32))
+        self.AO.setVal(BitArray(uint=0, length=32))
+        self.DO.setVal(BitArray(uint=0, length=32))
+        self.LMD.setVal(BitArray(uint=0, length=32))
+        # reset the Flags and Options
+        self.fJump = False
+        self.fForwarding = True
+        self.fDataHazard = False
+        self.fCtrlHazard = False
+        self.cStallCnt = 0
+        
 

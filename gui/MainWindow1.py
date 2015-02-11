@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file './mainwindow.ui'
 #
-# Created: Thu Feb  5 11:17:33 2015
+# Created: Wed Feb 11 16:21:23 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -53,6 +53,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.programview.sizePolicy().hasHeightForWidth())
         self.programview.setSizePolicy(sizePolicy)
         self.programview.setMinimumSize(QtCore.QSize(100, 400))
+        self.programview.setResizeMode(QtGui.QListView.Adjust)
         self.programview.setUniformItemSizes(True)
         self.programview.setSelectionRectVisible(True)
         self.programview.setObjectName("programview")
@@ -76,6 +77,7 @@ class Ui_MainWindow(object):
         self.pipeview.setSizePolicy(sizePolicy)
         self.pipeview.setMinimumSize(QtCore.QSize(200, 400))
         self.pipeview.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.pipeview.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
         self.pipeview.setObjectName("pipeview")
         self.DW2.setWidget(self.dockWidgetContents_2)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.DW2)
