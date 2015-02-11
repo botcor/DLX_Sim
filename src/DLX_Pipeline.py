@@ -71,15 +71,15 @@ class DLX_Pipeline:
         # store the Instruction to insFIFO as well
         self.insFIFO[0] = self.IR.getVal()
         # 
-        if not(self.StallCnt > 0):
+        if not(self.cStallCnt > 0):
             # determin the next Program Counter
             self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
             if (self.fJump == True):
                 self.PC.setVal( self.AO.getVal() )
             else:
-                self.PC.getVal( self.NPC.setVal() )
+                self.PC.setVal( self.NPC.getVal() )
         else:
-            self.StallCnt -= 1
+            self.cStallCnt -= 1
         
         
     def doID(self):
@@ -111,15 +111,15 @@ class DLX_Pipeline:
             self.Imm.setVal( self.IR.getVal()[16:32] )
 
         # determine the kind of extension and extend the Imm value
-        if ( __OP.uint == 0x08 | __OP.uint == 0x0A | ( __OP.uint >= 0x18 & __OP.uint <= 0x1D) |
-                __OP.uint == 0x02 | __OP.uint == 0x03 | __OP.uint == 0x04 | __OP.uint == 0x05):
+        if ( __OP.uint == 0x08 or __OP.uint == 0x0A or ( __OP.uint >= 0x18 & __OP.uint <= 0x1D) or
+                __OP.uint == 0x02 or __OP.uint == 0x03 or __OP.uint == 0x04 or __OP.uint == 0x05):
             # for ADDI,        SUBI,       SEQI, SNEI, SLTI, SGTI, SLEI, SGEI,          J, JAL,  BEQZ, BNEZ
             self.Imm.setVal( self.__extend(self.Imm.getVal() ) )
-        elif ( __OP.uint == 0x0F | __OP.uint == 0x23 | __OP.uint == 0x20 | __OP.uint == 0x21 |
-                __OP.uint == 0x2B | __OP.uint == 0x29 | __OP.uint == 0x28 ):
+        elif ( __OP.uint == 0x0F or __OP.uint == 0x23 or __OP.uint == 0x20 or __OP.uint == 0x21 or
+                __OP.uint == 0x2B or __OP.uint == 0x29 or __OP.uint == 0x28 ):
             # for LHI, LW, LB, LH, SW, SH, SB
             self.Imm.setVal( self.__extend(self.Imm.getVal() ) )
-        elif not( __OP.uint == 0x14 | __OP.uint == 0x17 | __OP.uint == 0x16 | __OP.uint == 0x00 ):
+        elif not( __OP.uint == 0x14 or __OP.uint == 0x17 or __OP.uint == 0x16 or __OP.uint == 0x00 ):
             # excluding SLLI, SRAI, SRLI along with all R-Type Instructions
             # -->    for ADDUI, SUBUI, ANDI, ORI, XORI,    SEQUI, SNEUI, SLTUI, SGTUI, SLEUI, SGEUI,   LBU, LHU
             self.Imm.setVal( self.__extend0( self.Imm.getVal() ) )
@@ -240,8 +240,8 @@ class DLX_Pipeline:
                     self.AO.setVal( self.alu.ADD( self.NPC_2.getVal() ), self.Imm.getVal() )
                 else:
                     self.Cond.setVal(BitArray(hex='0x5555'))
-            elif not( __OP.uint == 0x04 | __OP.uint == 0x05 ):
-                self.Cond.setVal( hex='0x5555' )
+            elif not( __OP.uint == 0x04 or __OP.uint == 0x05 ):
+                self.Cond.setVal(BitArray(hex='0x5555'))
             elif (__OP.uint == 0x12):
                 #JR
                 self.AO.setVal( BitArray( uint=( self.A.getVal().uint ) ) )
@@ -318,10 +318,10 @@ class DLX_Pipeline:
             elif ( __OP.uint == 0x0F ):
                 #LHI
                 self.AO.setVal( self.alu.SLL(self.A.getVal(), BitArray(uint=16, length=32)) )
-            elif ( __OP.uint == 0x20 | __OP.uint == 0x21 | __OP.uint == 0x23 | __OP.uint == 0x24 | __OP.uint == 0x25):
+            elif ( __OP.uint == 0x20 or __OP.uint == 0x21 or __OP.uint == 0x23 or __OP.uint == 0x24 or __OP.uint == 0x25):
                 #LB LH LW LBU LHU
                 self.AO.setVal( self.alu.ADDU(self.A.getVal(), self.Imm.getVal()) )
-            elif ( __OP.uint == 0x2B | __OP.uint == 0x29 | __OP.uint == 0x28):
+            elif ( __OP.uint == 0x2B or __OP.uint == 0x29 or __OP.uint == 0x28):
                 #SW SH SB
                 self.AO.setVal( self.alu.ADDU(self.A.getVal(), self.Imm.getVal()) )
                 self.DO.setVal( self.B.getVal() )
@@ -368,16 +368,16 @@ class DLX_Pipeline:
         elif ( __OP.uint == 0x28 ):
             # SB
             self.storage.setB( self.DO.getVal(), self.AO.getVal().uint )
-        elif ( __OP.uint == 0x12 | __OP.uint == 0x13 | __OP.uint == 0x02 | __OP.uint == 0x03 ):
+        elif ( __OP.uint == 0x12 or __OP.uint == 0x13 or __OP.uint == 0x02 or __OP.uint == 0x03 ):
                  # JR                    JALR                J                     JAL
             self.fJump = True
-        elif ( __OP.uint == 0x04 | __OP.uint == 0x05 ):
+        elif ( __OP.uint == 0x04 or __OP.uint == 0x05 ):
             #  BEQZ                BNEZ  
             if (self.Cond.getVal().hex == '0x5555'):
                 self.fJump = True
             else:
                 self.fJump = False
-        elif not( __OP.uint == 0x04 | __OP.uint == 0x05 | __OP.uint == 0x12 | __OP.uint == 0x13 | __OP.uint == 0x02 | __OP.uint == 0x03):
+        elif not( __OP.uint == 0x04 or __OP.uint == 0x05 or __OP.uint == 0x12 or __OP.uint == 0x13 or __OP.uint == 0x02 or __OP.uint == 0x03):
             self.fJump = False
         else:
             self.LMD.setVal( self.AO.getVal() )
@@ -389,7 +389,7 @@ class DLX_Pipeline:
         __IR = self.insFIFO[4]
         __OP = BitArray( __IR[0:6], length=6 )
 
-        if not( __OP.uint == 0x2B | __OP.uint == 0x29 | __OP.uint == 0x28 ):
+        if not( __OP.uint == 0x2B or __OP.uint == 0x29 or __OP.uint == 0x28 ):
             self.regbank.getRegById(  ).setVal( self.LMD.getVal() )
         return 0
 
@@ -441,7 +441,7 @@ class DLX_Pipeline:
                 mylogger.debug("FWD: LMD -> A")
             else:
                 # do two stalls
-                self.StallCnt = 2
+                self.cStallCnt = 2
             mylogger.debug("DataHazard: MEM -> ID(A)")
         elif ( __rd_mem == __rs2_id ):
             # Hazard between ID and MEM forward to B
@@ -451,7 +451,7 @@ class DLX_Pipeline:
                 mylogger.debug("FWD: LMD -> B")
             else:
                 # do two stalls
-                self.StallCnt = 2
+                self.cStallCnt = 2
             mylogger.debug("DataHazard: MEM -> ID(B)")
         elif( __rd_ex == __rs1_id ):
             # Hazard between ID and EX forward to A
