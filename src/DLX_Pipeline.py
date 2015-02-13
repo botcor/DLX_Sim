@@ -32,7 +32,7 @@ class DLX_Pipeline:
         self.piperegs = ['PC','NPC','NPC_2','IR','A','B','Imm','Cond','AO','DO','LMD']
         mylogger.info("Pipeline Stages: %s",self.stages)
         mylogger.info("Pipeline Registers: %s",self.piperegs)
-        self.insFIFO = deque(BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32),5)
+        self.insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
         self.storage = storage
         self.alu = alu
         self.regbank = regbank
@@ -56,7 +56,13 @@ class DLX_Pipeline:
         self.cStallCnt = 0
 
     def __shiftFIFO(self):
-        self.insFIFO.appendleft(BitArray(uint=0, length=32))
+        self.insFIFO[4] = self.insFIFO[3]
+        self.insFIFO[3] = self.insFIFO[2]
+        self.insFIFO[2] = self.insFIFO[1]
+        self.insFIFO[1] = self.insFIFO[0]
+        self.insFIFO[0] = BitArray(uint=0, length=32)
+        #self.insFIFO.appendleft(BitArray(uint=0, length=32))
+        mylogger.debug("SHIFT FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
 
     def __extend(self, value):
         return BitArray(int=value.int, length=32)
@@ -65,11 +71,15 @@ class DLX_Pipeline:
         return BitArray(uint=value.uint, length=32)
 
     def doIF(self):
-        mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
+        #mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        
         # get the next word from storage (indicated by PC) and store it to the IR Register
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
+        mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         # store the Instruction to insFIFO as well
         self.insFIFO[0] = self.IR.getVal()
+        mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
 
         # determin the next Program Counter
         self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
@@ -77,10 +87,12 @@ class DLX_Pipeline:
             self.PC.setVal( self.AO.getVal() )
         else:
             self.PC.setVal( self.NPC.getVal() )
+       
         
         
     def doID(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        mylogger.debug("ID FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         # save the opcode aside (not DLX specified)
         __OP = BitArray( self.IR.getVal()[0:6], length=6 )
         mylogger.critical("OP hat den Wert: %s %s", __OP, __OP.uint)
@@ -129,6 +141,7 @@ class DLX_Pipeline:
 
     def doEX(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        mylogger.debug("EX FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         # save the opcode aside (not DLX specified)
         __IR = self.insFIFO[2]
         __OP = BitArray( __IR[0:6], length=6 )
@@ -330,6 +343,7 @@ class DLX_Pipeline:
 
     def doMEM(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        mylogger.debug("MEM FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         # save the opcode aside (not DLX specified)
         __IR = self.insFIFO[3]
         mylogger.debug("insFIFO[3]: %s",self.insFIFO[3] )
@@ -384,6 +398,7 @@ class DLX_Pipeline:
 
     def doWB(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        mylogger.debug("WB FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         # save the opcode aside (not DLX specified)
         __IR = self.insFIFO[4]
         __OP = BitArray( __IR[0:6], length=6 )
@@ -415,7 +430,7 @@ class DLX_Pipeline:
             __rd_ex = 0
         else:
             # I-Type
-            __rd_ex = self.self.insFIFO[2][11:16].uint
+            __rd_ex = self.insFIFO[2][11:16].uint
 
         # determine the rd register in stage ID
         if ( __OP_id.uint == 0x00 ):
@@ -426,13 +441,13 @@ class DLX_Pipeline:
             __rd_id = 0xFF
         else:
             # I-Type
-            __rd_ex = self.insFIFO[1][0:6].uint
+            __rd_id = self.insFIFO[1][0:6].uint
 
         # determine the source registers in stage IF
         if ( __OP_if.uint == 0x00 ):
             # R-Type
             __rs1_if = self.insFIFO[0][6:11].uint
-            __rs2_id = self.insFIFO[0][11:16].uint
+            __rs2_if = self.insFIFO[0][11:16].uint
         elif ( __OP_if.uint <= 0x03 ):
             # J-Type
             __rs1_if = 0xFF
@@ -459,14 +474,14 @@ class DLX_Pipeline:
         elif( __rd_ex ==  __rs1_if ):
             # Hazard between IF and EX
             self.fDataHazard = True
-                # do one stall
-                self.cStallCnt = 1
+            # do one stall
+            self.cStallCnt = 1
             mylogger.debug("DataHazard: EX -> IF")
         elif ( __rd_ex == __rs2_if ):
             # Hazard between IF and EX
             self.fDataHazard = True
-                # do one stall
-                self.cStallCnt = 1
+            # do one stall
+            self.cStallCnt = 1
             mylogger.debug("DataHazard: EX -> IF")
         else:
             self.fDataHazard = False
@@ -507,7 +522,7 @@ class DLX_Pipeline:
             return 0
 
     def ResetPipeline(self):
-        self.insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
+        self.insFIFO = deque([BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)],5)
         # reset the Pipeline Registers
         self.PC.setVal(BitArray(uint=0, length=32))
         self.NPC.setVal(BitArray(uint=0, length=32))
