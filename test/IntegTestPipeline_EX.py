@@ -97,4 +97,7 @@ class TestCasesPipe_EX(unittest.TestCase):
      def tearDownClass(cls):
         mylogger.info("----------Unit Test Pipeline TearDown----------\n")
         del cls.regb
+        del cls.storage
+        del cls.alu
+        del cls.pipe
         return super().tearDownClass()

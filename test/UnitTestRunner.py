@@ -36,12 +36,13 @@ sys.stderr = TestHandler()
 
 
 testmodules = [
-#    'UnitTestsALU',
-#    'UnitTestsReg',
-#     'IntegTestPipeline_IF',
-#    'IntegTestPipeline_ID',
-#     'IntegTestPipeline_EX',
-#     'UnitTestSim',
+    #'UnitTestsALU',
+    #'UnitTestsReg',
+    # 'IntegTestPipeline_IF',
+    #'IntegTestPipeline_ID',
+    # 'IntegTestPipeline_EX',
+    #'IntegTestPipeline_MEM',
+    #'UnitTestSim',
     'IntegTestPipeline'
     ]
 
