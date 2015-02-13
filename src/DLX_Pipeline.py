@@ -32,7 +32,7 @@ class DLX_Pipeline:
         self.piperegs = ['PC','NPC','NPC_2','IR','A','B','Imm','Cond','AO','DO','LMD']
         mylogger.info("Pipeline Stages: %s",self.stages)
         mylogger.info("Pipeline Registers: %s",self.piperegs)
-        self.insFIFO = deque(BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32),5)
+        self.insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
         self.storage = storage
         self.alu = alu
         self.regbank = regbank
@@ -56,7 +56,12 @@ class DLX_Pipeline:
         self.cStallCnt = 0
 
     def __shiftFIFO(self):
-        self.insFIFO.appendleft(BitArray(uint=0, length=32))
+        self.insFIFO[4] = self.insFIFO[3]
+        self.insFIFO[3] = self.insFIFO[2]
+        self.insFIFO[2] = self.insFIFO[1]
+        self.insFIFO[1] = self.insFIFO[0]
+        self.insFIFO[0] = BitArray(uint=0, length=32)
+        mylogger.debug("Instruction FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
 
     def __extend(self, value):
         return BitArray(int=value.int, length=32)
@@ -415,7 +420,7 @@ class DLX_Pipeline:
             __rd_ex = 0
         else:
             # I-Type
-            __rd_ex = self.self.insFIFO[2][11:16].uint
+            __rd_ex = self.insFIFO[2][11:16].uint
 
         # determine the rd register in stage ID
         if ( __OP_id.uint == 0x00 ):
@@ -426,13 +431,13 @@ class DLX_Pipeline:
             __rd_id = 0xFF
         else:
             # I-Type
-            __rd_ex = self.insFIFO[1][0:6].uint
+            __rd_id = self.insFIFO[1][0:6].uint
 
         # determine the source registers in stage IF
         if ( __OP_if.uint == 0x00 ):
             # R-Type
             __rs1_if = self.insFIFO[0][6:11].uint
-            __rs2_id = self.insFIFO[0][11:16].uint
+            __rs2_if = self.insFIFO[0][11:16].uint
         elif ( __OP_if.uint <= 0x03 ):
             # J-Type
             __rs1_if = 0xFF
@@ -448,29 +453,33 @@ class DLX_Pipeline:
             # Hazard between IF and ID
             self.fDataHazard = True
             # do two stalls
-            self.StallCnt = 2
+            self.cStallCnt = 2
             mylogger.debug("DataHazard: ID -> IF")
         elif( __rd_id == __rs2_if ):
             # Hazard between IF and ID
             self.fDataHazard = True
             # do two stalls
-            self.StallCnt = 2
+            self.cStallCnt = 2
             mylogger.debug("DataHazard: ID -> IF")
         elif( __rd_ex ==  __rs1_if ):
             # Hazard between IF and EX
             self.fDataHazard = True
-                # do one stall
-                self.cStallCnt = 1
+            # do one stall
+            self.cStallCnt = 1
             mylogger.debug("DataHazard: EX -> IF")
         elif ( __rd_ex == __rs2_if ):
             # Hazard between IF and EX
             self.fDataHazard = True
-                # do one stall
-                self.cStallCnt = 1
+            # do one stall
+            self.cStallCnt = 1
             mylogger.debug("DataHazard: EX -> IF")
         else:
             self.fDataHazard = False
-        
+    
+    def insertBubble(self):
+        self.A = BitArray(uint=0, length=32)
+        self.B = BitArray(uint=0, length=32)
+        self.Imm = BitArray(uint=0, length=32)
 
     def doPipeNext(self):
         mylogger.debug("do Function: %s", (inspect.stack()[0][3]))
@@ -481,8 +490,12 @@ class DLX_Pipeline:
         self.doWB()
         self.doMEM()
         self.doEX()
-        self.doID()
-        self.doIF()
+        if(self.cStallCnt < 0):
+            self.insertBubble()
+            self.cStallCnt -= 1
+        else
+            self.doID()
+            self.doIF()
 
     def getPipeRegByName(self, name):
         if name == 'PC':

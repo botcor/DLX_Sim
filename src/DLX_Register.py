@@ -32,7 +32,7 @@ class DLX_Register:
 
     def getVal(self):
         mylogger.debug("Register %s hat momentan den Wert %s.", self.__name, self.__value.bin)
-        return self.__value
+        return BitArray(uint=self.__value.uint, length=32)
         
 
     def getName(self):
