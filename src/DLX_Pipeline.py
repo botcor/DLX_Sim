@@ -236,22 +236,21 @@ class DLX_Pipeline:
         else:
             # I-Type
             # Branches
+            self.Cond.setVal(BitArray(hex='0x0000'))
             if (__OP.uint == 0x04):
                 #BEQZ
                 if(self.A.getVal().uint == 0x00):
                     self.Cond.setVal(BitArray(hex='0x0001'))
-                    self.AO.setVal( self.alu.ADD( self.NPC_2.getVal() ), self.Imm.getVal() )
+                    self.AO.setVal( self.alu.ADD( self.NPC_2.getVal(), self.Imm.getVal() ) )
                 else:
                     self.Cond.setVal(BitArray(hex='0x0000'))
             elif (__OP.uint == 0x05):
                 #BNEZ
                 if(self.A.getVal().uint != 0x00):
                     self.Cond.setVal(BitArray(hex='0x0001'))
-                    self.AO.setVal( self.alu.ADD( self.NPC_2.getVal() ), self.Imm.getVal() )
+                    self.AO.setVal( self.alu.ADD( self.NPC_2.getVal(), self.Imm.getVal() ) )
                 else:
-                    self.Cond.setVal(BitArray(hex='0x0000'))
-            elif not( __OP.uint == 0x04 or __OP.uint == 0x05 ):
-                self.Cond.setVal(BitArray(hex='0x0000'))
+                    self.Cond.setVal(BitArray(hex='0x0000'))            
             elif (__OP.uint == 0x12):
                 #JR
                 self.AO.setVal( BitArray( uint=( self.A.getVal().uint ) ) )
@@ -355,6 +354,7 @@ class DLX_Pipeline:
         #   get the data from storage and store to LMD
         # else proceed the jump or forward AO
         #
+        self.fJump = False
         if ( __OP.uint == 0x23 ):
             # LW
             self.LMD.setVal( self.storage.getW( self.AO.getVal().uint ) )
@@ -388,8 +388,6 @@ class DLX_Pipeline:
                 self.fJump = True
             else:
                 self.fJump = False
-        elif not( __OP.uint == 0x04 or __OP.uint == 0x05 or __OP.uint == 0x12 or __OP.uint == 0x13 or __OP.uint == 0x02 or __OP.uint == 0x03):
-            self.fJump = False
         else:
             self.LMD.setVal( self.AO.getVal() )
         return 0
@@ -402,13 +400,13 @@ class DLX_Pipeline:
         __OP = BitArray( __IR[0:6], length=6 )
         if ( __OP.uint == 0x00 ):
             # R-Type
-            __rd = self.insFIFO[3][16:20].uint
+            __rd = self.insFIFO[4][16:20].uint
         elif ( __OP.uint <= 0x03 ):
             # J-Type
             __rd = 0
         else:
             # I-Type
-            __rd = self.self.insFIFO[3][11:16].uint
+            __rd = self.insFIFO[4][11:16].uint
 
         if not( __OP.uint == 0x2B or __OP.uint == 0x29 or __OP.uint == 0x28 ):
             self.regbank.getRegByID( __rd ).setVal( self.LMD.getVal() )
@@ -501,7 +499,7 @@ class DLX_Pipeline:
         if(self.cStallCnt < 0):
             self.insertBubble()
             self.cStallCnt -= 1
-        else
+        else:
             self.doID()
             self.doIF()
 
