@@ -17,6 +17,7 @@ sys.path.append('./src')
 import logging
 import inspect
 from DLX_Register import *
+from collections import deque
 
 #create logger
 mylogger = logging.getLogger("Pipeline")
@@ -28,10 +29,10 @@ class DLX_Pipeline:
 
     def __init__(self, storage, alu, regbank):        
         self.stages = ['IF','ID','EX','MEM','WB']
-        self.piperegs = ['PC','NPC','IR','A','B','Imm','Cond','AO','DO','LMD']
+        self.piperegs = ['PC','NPC','NPC_2','IR','A','B','Imm','Cond','AO','DO','LMD']
         mylogger.info("Pipeline Stages: %s",self.stages)
         mylogger.info("Pipeline Registers: %s",self.piperegs)
-        self.insFIFO = [BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)]
+        self.insFIFO = deque(BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32),5)
         self.storage = storage
         self.alu = alu
         self.regbank = regbank
@@ -54,9 +55,8 @@ class DLX_Pipeline:
         self.fCtrlHazard = False
         self.cStallCnt = 0
 
-    def __shiftFIFO(self, n):
-        self.insFIFO[:n] + self.insFIFO[n:]
-        self.insFIFO[0] = 0
+    def __shiftFIFO(self):
+        self.insFIFO.appendleft(BitArray(uint=0, length=32))
 
     def __extend(self, value):
         return BitArray(int=value.int, length=32)
@@ -70,16 +70,13 @@ class DLX_Pipeline:
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
         # store the Instruction to insFIFO as well
         self.insFIFO[0] = self.IR.getVal()
-        # 
-        if not(self.cStallCnt > 0):
-            # determin the next Program Counter
-            self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
-            if (self.fJump == True):
-                self.PC.setVal( self.AO.getVal() )
-            else:
-                self.PC.setVal( self.NPC.getVal() )
+
+        # determin the next Program Counter
+        self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
+        if (self.fJump == True):
+            self.PC.setVal( self.AO.getVal() )
         else:
-            self.cStallCnt -= 1
+            self.PC.setVal( self.NPC.getVal() )
         
         
     def doID(self):
@@ -405,73 +402,72 @@ class DLX_Pipeline:
         return 0
 
     def detectDataHazard(self):
-        __OP_mem = self.insFIFO[3][0:6]
-        __OP_id = self.insFIFO[1][0:6]
         __OP_ex = self.insFIFO[2][0:6]
+        __OP_id = self.insFIFO[1][0:6]
+        __OP_if = self.insFIFO[0][0:6]
         
-        # determine the affected registers in MEM, ID and EX
-        if ( __OP_mem.uint == 0x00 ):
-            # R-Type
-            __rd_mem = self.insFIFO[3][16:20].uint
-        elif ( __OP_mem.uint <= 0x03 ):
-            # J-Type
-            __rd_mem = 0
-        else:
-            # I-Type
-            __rd_mem = self.self.insFIFO[3][11:16].uint
-
-        if ( __OP_id.uint == 0x00 ):
-            # R-Type
-            __rs1_id = self.insFIFO[1][6:11].uint
-            __rs2_id = self.insFIFO[1][11:16].uint
-        elif ( __OP_id.uint <= 0x03 ):
-            # J-Type
-            __rs1_id = 0xFF
-            __rs2_id = 0xFF
-        else:
-            # I-Type
-            __rs1_id = self.insFIFO[1][6:11].uint
-            __rs2_id = 0xFF
-
+        # determine the affected registers in IF, ID and EX
         if ( __OP_ex.uint == 0x00 ):
             # R-Type
-            __rd_ex = self.insFIFO[1][0:6].uint
+            __rd_ex = self.insFIFO[2][16:20].uint
         elif ( __OP_ex.uint <= 0x03 ):
             # J-Type
-            __rd_ex = 0xFF
+            __rd_ex = 0
+        else:
+            # I-Type
+            __rd_ex = self.self.insFIFO[2][11:16].uint
+
+        # determine the rd register in stage ID
+        if ( __OP_id.uint == 0x00 ):
+            # R-Type
+            __rd_id = self.insFIFO[1][0:6].uint
+        elif ( __OP_id.uint <= 0x03 ):
+            # J-Type
+            __rd_id = 0xFF
         else:
             # I-Type
             __rd_ex = self.insFIFO[1][0:6].uint
+
+        # determine the source registers in stage IF
+        if ( __OP_if.uint == 0x00 ):
+            # R-Type
+            __rs1_if = self.insFIFO[0][6:11].uint
+            __rs2_id = self.insFIFO[0][11:16].uint
+        elif ( __OP_if.uint <= 0x03 ):
+            # J-Type
+            __rs1_if = 0xFF
+            __rs2_if = 0xFF
+        else:
+            # I-Type
+            __rs1_if = self.insFIFO[0][6:11].uint
+            __rs2_if = 0xFF
+
         
         # checking for hazards
-        if( __rd_mem ==  __rs1_id ):
-            # Hazard between ID and MEM forward to A
+        if( __rd_id == __rs1_if ):
+            # Hazard between IF and ID
             self.fDataHazard = True
-            if(self.fForwarding == True):
-                # forward LMD to A
-                mylogger.debug("FWD: LMD -> A")
-            else:
-                # do two stalls
-                self.cStallCnt = 2
-            mylogger.debug("DataHazard: MEM -> ID(A)")
-        elif ( __rd_mem == __rs2_id ):
-            # Hazard between ID and MEM forward to B
+            # do two stalls
+            self.StallCnt = 2
+            mylogger.debug("DataHazard: ID -> IF")
+        elif( __rd_id == __rs2_if ):
+            # Hazard between IF and ID
             self.fDataHazard = True
-            if(self.fForwarding == True):
-                # forward LMD to B
-                mylogger.debug("FWD: LMD -> B")
-            else:
-                # do two stalls
-                self.cStallCnt = 2
-            mylogger.debug("DataHazard: MEM -> ID(B)")
-        elif( __rd_ex == __rs1_id ):
-            # Hazard between ID and EX forward to A
+            # do two stalls
+            self.StallCnt = 2
+            mylogger.debug("DataHazard: ID -> IF")
+        elif( __rd_ex ==  __rs1_if ):
+            # Hazard between IF and EX
             self.fDataHazard = True
-            mylogger.debug("DataHazard: EX -> ID(A)")
-        elif( __rd_ex == __rs2_id ):
-            # Hazard between ID and EX forward to B
+                # do one stall
+                self.cStallCnt = 1
+            mylogger.debug("DataHazard: EX -> IF")
+        elif ( __rd_ex == __rs2_if ):
+            # Hazard between IF and EX
             self.fDataHazard = True
-            mylogger.debug("DataHazard: EX -> ID(A)")
+                # do one stall
+                self.cStallCnt = 1
+            mylogger.debug("DataHazard: EX -> IF")
         else:
             self.fDataHazard = False
         
@@ -480,14 +476,13 @@ class DLX_Pipeline:
         mylogger.debug("do Function: %s", (inspect.stack()[0][3]))
         mylogger.debug("PC:       %d", self.PC.getVal().uint)
         mylogger.debug("Instruction FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
+        self.__shiftFIFO()
         self.DataHazard = self.detectDataHazard()
         self.doWB()
         self.doMEM()
         self.doEX()
         self.doID()
         self.doIF()
-
-        self.__shiftFIFO(1)
 
     def getPipeRegByName(self, name):
         if name == 'PC':
