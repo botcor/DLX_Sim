@@ -72,11 +72,10 @@ class DLX_Pipeline:
 
     def doIF(self):
         mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
-        #mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         
         # get the next word from storage (indicated by PC) and store it to the IR Register
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
-        mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         # store the Instruction to insFIFO as well
         self.insFIFO[0] = self.IR.getVal()
         mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
@@ -130,7 +129,7 @@ class DLX_Pipeline:
         elif not( __OP.uint == 0x14 or __OP.uint == 0x17 or __OP.uint == 0x16 or __OP.uint == 0x00 ):
             # excluding SLLI, SRAI, SRLI along with all R-Type Instructions
             # -->    for ADDUI, SUBUI, ANDI, ORI, XORI,    SEQUI, SNEUI, SLTUI, SGTUI, SLEUI, SGEUI,   LBU, LHU
-            mylogger.critical("Doing O extension")
+            mylogger.critical("Doing 0 extension")
             self.Imm.setVal( self.__extend0( self.Imm.getVal() ) )
 
         # forward the NPC Register to the EX stage
@@ -250,7 +249,7 @@ class DLX_Pipeline:
                     self.Cond.setVal(BitArray(hex='0x0001'))
                     self.AO.setVal( self.alu.ADD( self.NPC_2.getVal(), self.Imm.getVal() ) )
                 else:
-                    self.Cond.setVal(BitArray(hex='0x0000'))            
+                    self.Cond.setVal(BitArray(hex='0x0000'))                
             elif (__OP.uint == 0x12):
                 #JR
                 self.AO.setVal( BitArray( uint=( self.A.getVal().uint ) ) )
@@ -353,7 +352,6 @@ class DLX_Pipeline:
         # if a load/store
         #   get the data from storage and store to LMD
         # else proceed the jump or forward AO
-        #
         self.fJump = False
         if ( __OP.uint == 0x23 ):
             # LW

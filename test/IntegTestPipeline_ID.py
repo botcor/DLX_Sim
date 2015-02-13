@@ -56,7 +56,7 @@ class TestCasesPipe_ID(unittest.TestCase):
         mylogger.info("TestCase: test_doID_I3 SUCCESSFUL")
 
     def test_doID_I4(self):
-        mylogger.info("TestCase: test_doID_I3 START")
+        mylogger.info("TestCase: test_doID_I4 START")
         #ADDUI r15, r3, 255
         self.ins = BitArray(hex='0x246000FF')
         self.pipe.IR.setVal(self.ins)
@@ -110,4 +110,7 @@ class TestCasesPipe_ID(unittest.TestCase):
     def tearDownClass(cls):
         mylogger.info("----------Unit Test Pipeline TearDown----------\n")
         del cls.regb
+        del cls.storage
+        del cls.alu
+        del cls.pipe
         return super().tearDownClass()
