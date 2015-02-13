@@ -72,11 +72,10 @@ class DLX_Pipeline:
 
     def doIF(self):
         mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
-        #mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         
         # get the next word from storage (indicated by PC) and store it to the IR Register
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
-        mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         # store the Instruction to insFIFO as well
         self.insFIFO[0] = self.IR.getVal()
         mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
@@ -130,7 +129,7 @@ class DLX_Pipeline:
         elif not( __OP.uint == 0x14 or __OP.uint == 0x17 or __OP.uint == 0x16 or __OP.uint == 0x00 ):
             # excluding SLLI, SRAI, SRLI along with all R-Type Instructions
             # -->    for ADDUI, SUBUI, ANDI, ORI, XORI,    SEQUI, SNEUI, SLTUI, SGTUI, SLEUI, SGEUI,   LBU, LHU
-            mylogger.critical("Doing O extension")
+            mylogger.critical("Doing 0 extension")
             self.Imm.setVal( self.__extend0( self.Imm.getVal() ) )
 
         # forward the NPC Register to the EX stage
@@ -236,11 +235,12 @@ class DLX_Pipeline:
         else:
             # I-Type
             # Branches
+            self.Cond.setVal(BitArray(hex='0x0000'))
             if (__OP.uint == 0x04):
                 #BEQZ
                 if(self.A.getVal().uint == 0x00):
                     self.Cond.setVal(BitArray(hex='0x0001'))
-                    self.AO.setVal( self.alu.ADD( self.NPC_2.getVal() ), self.Imm.getVal() )
+                    self.AO.setVal( self.alu.ADD( self.NPC_2.getVal(), self.Imm.getVal() ))
                 else:
                     self.Cond.setVal(BitArray(hex='0x0000'))
             elif (__OP.uint == 0x05):
@@ -249,9 +249,7 @@ class DLX_Pipeline:
                     self.Cond.setVal(BitArray(hex='0x0001'))
                     self.AO.setVal( self.alu.ADD( self.NPC_2.getVal() ), self.Imm.getVal() )
                 else:
-                    self.Cond.setVal(BitArray(hex='0x0000'))
-            elif not( __OP.uint == 0x04 or __OP.uint == 0x05 ):
-                self.Cond.setVal(BitArray(hex='0x0000'))
+                    self.Cond.setVal(BitArray(hex='0x0000'))                
             elif (__OP.uint == 0x12):
                 #JR
                 self.AO.setVal( BitArray( uint=( self.A.getVal().uint ) ) )
@@ -354,7 +352,7 @@ class DLX_Pipeline:
         # if a load/store
         #   get the data from storage and store to LMD
         # else proceed the jump or forward AO
-        #
+        self.fJump = False
         if ( __OP.uint == 0x23 ):
             # LW
             self.LMD.setVal( self.storage.getW( self.AO.getVal().uint ) )
@@ -388,8 +386,6 @@ class DLX_Pipeline:
                 self.fJump = True
             else:
                 self.fJump = False
-        elif not( __OP.uint == 0x04 or __OP.uint == 0x05 or __OP.uint == 0x12 or __OP.uint == 0x13 or __OP.uint == 0x02 or __OP.uint == 0x03):
-            self.fJump = False
         else:
             self.LMD.setVal( self.AO.getVal() )
         return 0
@@ -402,13 +398,13 @@ class DLX_Pipeline:
         __OP = BitArray( __IR[0:6], length=6 )
         if ( __OP.uint == 0x00 ):
             # R-Type
-            __rd = self.insFIFO[3][16:20].uint
+            __rd = self.insFIFO[4][16:20].uint
         elif ( __OP.uint <= 0x03 ):
             # J-Type
             __rd = 0
         else:
             # I-Type
-            __rd = self.self.insFIFO[3][11:16].uint
+            __rd = self.insFIFO[4][11:16].uint
 
         if not( __OP.uint == 0x2B or __OP.uint == 0x29 or __OP.uint == 0x28 ):
             self.regbank.getRegByID( __rd ).setVal( self.LMD.getVal() )
@@ -501,7 +497,7 @@ class DLX_Pipeline:
         if(self.cStallCnt < 0):
             self.insertBubble()
             self.cStallCnt -= 1
-        else
+        else:
             self.doID()
             self.doIF()
 
