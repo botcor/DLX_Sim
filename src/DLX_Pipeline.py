@@ -147,8 +147,8 @@ class DLX_Pipeline:
             # dependent on the opcode do
                 # condition checking
                 # alu calling
-        self.AO = BitArray(uint=0, length=32)
-        elif ( __OP.uint == 0x00 ):
+        self.AO.setVal( BitArray(uint=0, length=32) )
+        if ( __OP.uint == 0x00 ):
             # R-Type
             # func is stored in the Register Imm
             if (self.Imm.getVal().uint == 0x20):
@@ -482,18 +482,18 @@ class DLX_Pipeline:
             self.fDataHazard = False
     
     def insertBubbleID(self):
-        self.A = BitArray(uint=0, length=32)
-        self.B = BitArray(uint=0, length=32)
-        self.Imm = BitArray(uint=0, length=32)
-        self.insFIFO[1] = BitArray(uint=0, length=32)
+        self.A.setVal( BitArray(uint=0, length=32) )
+        self.B.setVal( BitArray(uint=0, length=32) )
+        self.Imm.setVal( BitArray(uint=0, length=32) )
+        self.insFIFO[1] = BitArray(uint=0, length=32) )
     def insertBubbleEX(self):
-        self.AO = BitArray(uint=0, length=32)
-        self.insFIFO[2] = BitArray(uint=0, length=32)
+        self.AO.setVal( BitArray(uint=0, length=32) )
+        self.insFIFO[2] = BitArray(uint=0, length=32) )
     def insertBubbleMEM(self):
-        self.LMD = BitArray(uint=0, length=32)
-        self.insFIFO[3] = BitArray(uint=0, length=32)
+        self.LMD.setVal( BitArray(uint=0, length=32) )
+        self.insFIFO[3] = BitArray(uint=0, length=32) )
     def insertBubbleWB(self):
-        self.insFIFO[4] = BitArray(uint=0, length=32)
+        self.insFIFO[4] = BitArray(uint=0, length=32) )
 
     def doPipeNext(self):
         mylogger.debug("do Function: %s", (inspect.stack()[0][3]))
