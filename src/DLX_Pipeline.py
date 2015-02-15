@@ -72,13 +72,12 @@ class DLX_Pipeline:
         return BitArray(uint=value.uint, length=32)
 
     def doIF(self):
-        mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         # get the next word from storage (indicated by PC) and store it to the IR Register
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
         # store the Instruction to insFIFO as well
         self.insFIFO[0] = self.IR.getVal()
-        mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
 
         # determin the next Program Counter
         self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
@@ -454,32 +453,34 @@ class DLX_Pipeline:
 
         
         # checking for hazards
-        if( __rd_id == __rs1_if ):
-            # Hazard between IF and ID
-            self.fDataHazard = True
-            # do two stalls
-            self.cStallCnt = 2
-            mylogger.debug("DataHazard: ID -> IF")
-        elif( __rd_id == __rs2_if ):
-            # Hazard between IF and ID
-            self.fDataHazard = True
-            # do two stalls
-            self.cStallCnt = 2
-            mylogger.debug("DataHazard: ID -> IF")
-        elif( __rd_ex ==  __rs1_if ):
-            # Hazard between IF and EX
-            self.fDataHazard = True
-            # do one stall
-            self.cStallCnt = 1
-            mylogger.debug("DataHazard: EX -> IF")
-        elif ( __rd_ex == __rs2_if ):
-            # Hazard between IF and EX
-            self.fDataHazard = True
-            # do one stall
-            self.cStallCnt = 1
-            mylogger.debug("DataHazard: EX -> IF")
-        else:
-            self.fDataHazard = False
+        self.fDataHazard = False
+        self.cStallCnt = 0
+        if not(self.insFIFO[1].uint == 0):
+            if( __rd_id == __rs1_if ):
+                # Hazard between IF and ID
+                self.fDataHazard = True
+                # do two stalls
+                self.cStallCnt = 2
+                mylogger.debug("DataHazard: ID -> IF")
+            elif( __rd_id == __rs2_if ):
+                # Hazard between IF and ID
+                self.fDataHazard = True
+                # do two stalls
+                self.cStallCnt = 2
+                mylogger.debug("DataHazard: ID -> IF")
+        if not(self.insFIFO[2].uint == 0):
+            elif( __rd_ex ==  __rs1_if ):
+                # Hazard between IF and EX
+                self.fDataHazard = True
+                # do one stall
+                self.cStallCnt = 1
+                mylogger.debug("DataHazard: EX -> IF")
+            elif ( __rd_ex == __rs2_if ):
+                # Hazard between IF and EX
+                self.fDataHazard = True
+                # do one stall
+                self.cStallCnt = 1
+                mylogger.debug("DataHazard: EX -> IF")
     
     def insertBubbleID(self):
         self.A.setVal( BitArray(uint=0, length=32) )
@@ -488,12 +489,12 @@ class DLX_Pipeline:
         self.insFIFO[1] = BitArray(uint=0, length=32) )
     def insertBubbleEX(self):
         self.AO.setVal( BitArray(uint=0, length=32) )
-        self.insFIFO[2] = BitArray(uint=0, length=32) )
+        self.insFIFO[2] = BitArray(uint=0, length=32)
     def insertBubbleMEM(self):
         self.LMD.setVal( BitArray(uint=0, length=32) )
-        self.insFIFO[3] = BitArray(uint=0, length=32) )
+        self.insFIFO[3] = BitArray(uint=0, length=32)
     def insertBubbleWB(self):
-        self.insFIFO[4] = BitArray(uint=0, length=32) )
+        self.insFIFO[4] = BitArray(uint=0, length=32)
 
     def doPipeNext(self):
         mylogger.debug("do Function: %s", (inspect.stack()[0][3]))
