@@ -46,6 +46,7 @@ class DLX_Pipeline:
         self.Imm = DLX_Register(name="Imm")
         self.Cond = DLX_Register(name="Cond")
         self.AO = DLX_Register(name="AO")
+        self.AO_2 = DLX_Register(name="AO_2")
         self.DO = DLX_Register(name="DO")
         self.LMD = DLX_Register(name="LMD")
         # define the Flags and Options
@@ -82,7 +83,7 @@ class DLX_Pipeline:
         # determin the next Program Counter
         self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
         if (self.fJump == True):
-            self.PC.setVal( self.AO.getVal() )
+            self.PC.setVal( self.AO_2.getVal() )
         else:
             self.PC.setVal( self.NPC.getVal() )  
         
@@ -380,10 +381,12 @@ class DLX_Pipeline:
         elif ( __OP.uint == 0x12 or __OP.uint == 0x13 or __OP.uint == 0x02 or __OP.uint == 0x03 ):
                  # JR                    JALR                J                     JAL
             self.fJump = True
+            self.AO_2.setVal( self.AO.getVal() )
         elif ( __OP.uint == 0x04 or __OP.uint == 0x05 ):
             #  BEQZ                BNEZ  
             if (self.Cond.getVal().uint == 0x01):
                 self.fJump = True
+                self.AO_2.setVal( self.AO.getVal() )
             else:
                 self.fJump = False
         else:
@@ -469,7 +472,7 @@ class DLX_Pipeline:
                 self.cStallCnt = 2
                 mylogger.debug("DataHazard: ID -> IF")
         if not(self.insFIFO[2].uint == 0):
-            elif( __rd_ex ==  __rs1_if ):
+            if( __rd_ex ==  __rs1_if ):
                 # Hazard between IF and EX
                 self.fDataHazard = True
                 # do one stall
@@ -486,7 +489,7 @@ class DLX_Pipeline:
         self.A.setVal( BitArray(uint=0, length=32) )
         self.B.setVal( BitArray(uint=0, length=32) )
         self.Imm.setVal( BitArray(uint=0, length=32) )
-        self.insFIFO[1] = BitArray(uint=0, length=32) )
+        self.insFIFO[1] = BitArray(uint=0, length=32)
     def insertBubbleEX(self):
         self.AO.setVal( BitArray(uint=0, length=32) )
         self.insFIFO[2] = BitArray(uint=0, length=32)
@@ -560,6 +563,7 @@ class DLX_Pipeline:
         self.Imm.setVal(BitArray(uint=0, length=32))
         self.Cond.setVal(BitArray(uint=0, length=32))
         self.AO.setVal(BitArray(uint=0, length=32))
+        self.AO_2.setVal(BitArray(uint=0, length=32))
         self.DO.setVal(BitArray(uint=0, length=32))
         self.LMD.setVal(BitArray(uint=0, length=32))
         # reset the Flags and Options
