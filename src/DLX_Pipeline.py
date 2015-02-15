@@ -147,8 +147,7 @@ class DLX_Pipeline:
             # dependent on the opcode do
                 # condition checking
                 # alu calling
-        if ( __IR.uint == 0 or __OP.uint == 0x11):
-            self.AO = BitArray(uint=0, length=32)
+        self.AO = BitArray(uint=0, length=32)
         elif ( __OP.uint == 0x00 ):
             # R-Type
             # func is stored in the Register Imm
@@ -229,11 +228,11 @@ class DLX_Pipeline:
             if ( __OP.uint == 0x02 ):
                 # increase the Imm by 4 (bytes) and store in NPC
                 self.AO.setVal( BitArray( uint=( self.Imm.getVal().uint + 4 ), length=32 ) )
-            elif (self.Imm.getVal().uint == 0x03):
-                #JAL
+            elif ( __OP.uint == 0x03):
+                # JAL
                 # store current PC to R31 increased by 4, increase the PC by Imm and store in NPC
-                self.regbank.getRegByID(31).setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
-                self.AO.setVal( BitArray( uint=( self.PC.getVal().uint + self.Imm.getVal().uint ), length=32 ) )
+                self.regbank.getRegByID(31).setVal( BitArray( uint=( self.NPC_2.getVal().uint ), length=32 ) )
+                self.AO.setVal( BitArray( uint=( self.NPC_2.getVal().uint + self.Imm.getVal().uint ), length=32 ) )
         else:
             # I-Type
             # Branches
@@ -251,13 +250,13 @@ class DLX_Pipeline:
                     self.Cond.setVal(BitArray(hex='0x0001'))
                     self.AO.setVal( self.alu.ADD( self.NPC_2.getVal(), self.Imm.getVal() ) )
                 else:
-                    self.Cond.setVal(BitArray(hex='0x0000'))                
+                    self.Cond.setVal(BitArray(hex='0x0000'))
             elif (__OP.uint == 0x12):
                 #JR
                 self.AO.setVal( BitArray( uint=( self.A.getVal().uint ) ) )
             elif (__OP.uint == 0x13):
                 #JALR
-                self.regbank.getRegByID(31).setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
+                self.regbank.getRegByID(31).setVal( BitArray( uint=( self.NPC_2.getVal().uint ), length=32 ) )
                 self.AO.setVal( BitArray( uint=( self.A.getVal().uint) ) )
             elif (__OP.uint == 0x08):
                 #ADDI
@@ -408,7 +407,7 @@ class DLX_Pipeline:
             # I-Type
             __rd = self.insFIFO[4][11:16].uint
 
-        if not( __OP.uint == 0x2B or __OP.uint == 0x29 or __OP.uint == 0x28 ):
+        if not( __OP.uint == 0x2B or __OP.uint == 0x29 or __OP.uint == 0x28 or __OP.uint == 0x04 or __OP.uint == 0x05):
             self.regbank.getRegByID( __rd ).setVal( self.LMD.getVal() )
         return 0
 
@@ -487,6 +486,14 @@ class DLX_Pipeline:
         self.B = BitArray(uint=0, length=32)
         self.Imm = BitArray(uint=0, length=32)
         self.insFIFO[1] = BitArray(uint=0, length=32)
+    def insertBubbleEX(self):
+        self.AO = BitArray(uint=0, length=32)
+        self.insFIFO[2] = BitArray(uint=0, length=32)
+    def insertBubbleMEM(self):
+        self.LMD = BitArray(uint=0, length=32)
+        self.insFIFO[3] = BitArray(uint=0, length=32)
+    def insertBubbleWB(self):
+        self.insFIFO[4] = BitArray(uint=0, length=32)
 
     def doPipeNext(self):
         mylogger.debug("do Function: %s", (inspect.stack()[0][3]))
@@ -494,14 +501,24 @@ class DLX_Pipeline:
         mylogger.debug("Instruction FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         self.__shiftFIFO()
         self.DataHazard = self.detectDataHazard()
+
         self.doWB()
         self.doMEM()
-        self.doEX()
-        if(self.cStallCnt < 0):
+
+        if(self.fJump == True):
+            self.insertBubbleEX()
+        else:
+            self.doEX()
+
+        if(self.cStallCnt > 0):
             self.insertBubbleID()
             self.cStallCnt -= 1
+        elif(self.fJump == True):
+            self.insertBubbleID()
         else:
             self.doID()
+
+        if(self.cStallCnt == 0):
             self.doIF()
 
     def getPipeRegByName(self, name):
