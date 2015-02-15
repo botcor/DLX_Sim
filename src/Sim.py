@@ -4,7 +4,7 @@ from DLX_Speicher import *
 from DLX_ALU import *
 from DLX_Register import *
 from DLX_Pipeline import *
-# DLX_Translator import *
+from DLX_Translator import *
 
 #create logger
 mylogger = logging.getLogger("Simulator")
@@ -14,11 +14,15 @@ class Simulator:
     def __init__(self):
         mylogger.debug("Simulator wurde angelegt") 
         self.storage = DLX_Speicher()
-        #self.trans = DLX_Translator()
+        self.trans = DLX_Translator()
         self.alu = DLX_ALU()
         self.regb = DLX_Reg_Bank()
         self.pipe = DLX_Pipeline(self.storage, self.alu, self.regb)
-
+        self.zustand = [0,0,0,0,0]
+        self.befehl = [0]
+        self.cnt = 0
+        self.takt = 0
+        self.fStall = False
 
 
     def collectData(self, filename):
@@ -66,7 +70,54 @@ class Simulator:
                 adr = adr+4
 
         mylogger.debug("Funktion %s  Datei: %s wurde in den Speicher geschrieben", (inspect.stack()[0][3]), filename)
-            
-   
 
-
+    def doPipe(number):
+        self.num = number
+        self.ersterBefehlinDurchgang = (len(befehl) - 1)    
+        while(self.zustand[4] == (self.ersterBefehlinDurchgang + self.num)):
+            self.pipe.doPipeNext()
+            self.befehl.append(trans.OperationToAsm(self.pipe.IR.getVal()))
+            if(len(befehl) == 1):
+                self.fStall = False
+                self.zustand[0] = (len(befehl) - 1)
+                self.takt += 1
+            if(len(befehl) == 2):
+                self.fStall = False
+                self.zustand[0] = (len(befehl) - 1)
+                self.zustand[1] = (len(befehl) - 2)
+                self.takt += 1
+            elif(len(befehl) == 3):
+                self.fStall = False
+                self.zustand[0] = (len(befehl) - 1)
+                self.zustand[1] = (len(befehl) - 2)
+                self.zustand[2] = (len(befehl) - 3)
+                self.takt += 1
+            elif(len(befehl) == 4):
+                self.fStall = False
+                self.zustand[0] = (len(befehl) - 1)
+                self.zustand[1] = (len(befehl) - 2)
+                self.zustand[2] = (len(befehl) - 3)
+                self.zustand[3] = (len(befehl) - 4)
+                self.takt += 1
+            elif(len(befehl) == 4):
+                self.fStall = False
+                self.zustand[0] = (len(befehl) - 1)
+                self.zustand[1] = (len(befehl) - 2)
+                self.zustand[2] = (len(befehl) - 3)
+                self.zustand[3] = (len(befehl) - 4)
+                self.zustand[4] = (len(befehl) - 4)
+                self.takt += 1
+            else:
+                if(self.pipe.cStallCnt < 1):
+                    self.fStall = False
+                    zustand[0] = (len(befehl) - 1)
+                    zustand[1] = (len(befehl) - 2)
+                    zustand[2] = (len(befehl) - 3)
+                    zustand[3] = (len(befehl) - 4)
+                    zustand[4] = (len(befehl) - 4)
+                    takt += 1
+                else:
+                    self.fStall = True
+                    zustand[2] = (len(befehl) - 3)
+                    zustand[3] = (len(befehl) - 4)
+                    zustand[4] = (len(befehl) - 4)
