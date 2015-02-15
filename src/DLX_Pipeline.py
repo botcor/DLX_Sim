@@ -227,12 +227,12 @@ class DLX_Pipeline:
             # J-Type
             if ( __OP.uint == 0x02 ):
                 # increase the Imm by 4 (bytes) and store in NPC
-                self.AO.setVal( BitArray( uint=( self.Imm.getVal().uint + 4 ), length=32 ) )
+                self.AO.setVal( self.alu.ADD( self.NPC_2.getVal(), self.Imm.getVal() ) )
             elif ( __OP.uint == 0x03):
                 # JAL
                 # store current PC to R31 increased by 4, increase the PC by Imm and store in NPC
                 self.regbank.getRegByID(31).setVal( BitArray( uint=( self.NPC_2.getVal().uint ), length=32 ) )
-                self.AO.setVal( BitArray( uint=( self.NPC_2.getVal().uint + self.Imm.getVal().uint ), length=32 ) )
+                self.AO.setVal( self.alu.SUB( self.alu.ADD( self.NPC_2.getVal(), self.Imm.getVal() ), BitArray(uint=4, length=32)) )
         else:
             # I-Type
             # Branches
@@ -401,7 +401,7 @@ class DLX_Pipeline:
         __OP = BitArray( __IR[0:6], length=6 )
         if ( __OP.uint == 0x00 ):
             # R-Type
-            __rd = self.insFIFO[4][16:20].uint
+            __rd = self.insFIFO[4][16:21].uint
         elif ( __OP.uint <= 0x03 ):
             # J-Type
             __rd = 0
@@ -459,13 +459,13 @@ class DLX_Pipeline:
         self.fDataHazard = False
         self.cStallCnt = 0
         if not(self.insFIFO[1].uint == 0):
-            if( __rd_id == __rs1_if ):
+            if( __rd_id == __rs1_if):
                 # Hazard between IF and ID
                 self.fDataHazard = True
                 # do two stalls
                 self.cStallCnt = 2
                 mylogger.debug("DataHazard: ID -> IF")
-            elif( __rd_id == __rs2_if ):
+            elif( __rd_id == __rs2_if):
                 # Hazard between IF and ID
                 self.fDataHazard = True
                 # do two stalls
@@ -486,6 +486,7 @@ class DLX_Pipeline:
                 mylogger.debug("DataHazard: EX -> IF")
     
     def insertBubbleID(self):
+        mylogger.debug("Bubble")
         self.A.setVal( BitArray(uint=0, length=32) )
         self.B.setVal( BitArray(uint=0, length=32) )
         self.Imm.setVal( BitArray(uint=0, length=32) )
@@ -504,7 +505,7 @@ class DLX_Pipeline:
         mylogger.debug("PC:       %d", self.PC.getVal().uint)
         mylogger.debug("Instruction FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         self.__shiftFIFO()
-        self.DataHazard = self.detectDataHazard()
+        # self.DataHazard = self.detectDataHazard()
 
         self.doWB()
         self.doMEM()
