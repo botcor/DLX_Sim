@@ -57,7 +57,7 @@ def showProgram(checked):
 
 def showRegisters(checked):
     if(checked):
-        regmod.setContent()
+        regmod.setContentInitial(mySIM)
 
 def showMemory(checked):
     if(checked):

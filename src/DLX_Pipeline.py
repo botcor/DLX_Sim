@@ -53,6 +53,7 @@ class DLX_Pipeline:
         self.fForwarding = True
         self.fDataHazard = False
         self.fCtrlHazard = False
+        self.fTrap = False
         self.cStallCnt = 0
 
     def __shiftFIFO(self):
@@ -73,7 +74,6 @@ class DLX_Pipeline:
     def doIF(self):
         mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
-        
         # get the next word from storage (indicated by PC) and store it to the IR Register
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
         # store the Instruction to insFIFO as well
@@ -142,12 +142,14 @@ class DLX_Pipeline:
         # save the opcode aside (not DLX specified)
         __IR = self.insFIFO[2]
         __OP = BitArray( __IR[0:6], length=6 )
-        # determine Task by the rules:
-        # dependent on Type load B or Imm
+        # determine Task by these rules:
+        # dependent on Intruction Type take B or Imm
             # dependent on the opcode do
                 # condition checking
                 # alu calling
-        if ( __OP.uint == 0x00 ):
+        if ( __IR.uint == 0 or __OP.uint == 0x11):
+            self.AO = BitArray(uint=0, length=32)
+        elif ( __OP.uint == 0x00 ):
             # R-Type
             # func is stored in the Register Imm
             if (self.Imm.getVal().uint == 0x20):
@@ -361,13 +363,13 @@ class DLX_Pipeline:
             self.LMD.setVal( self.__extend( self.storage.getB( self.AO.getVal().uint ) ) )
         elif ( __OP.uint == 0x21 ):
             # LH
-            self.LMD.setVal( self.__extend( self.storage.getH( self.AO.getVal().uint ) ) )
+            self.LMD.setVal( self.__extend( self.storage.getHW( self.AO.getVal().uint ) ) )
         elif ( __OP.uint == 0x24 ):
             # LBU
             self.LMD.setVal( self.__extend0( self.storage.getB( self.AO.getVal().uint ) ) )
         elif ( __OP.uint == 0x25 ):
             # LHU
-            self.LMD.setVal( self.__extend0( self.storage.getH( self.AO.getVal().uint ) ) )
+            self.LMD.setVal( self.__extend0( self.storage.getHW( self.AO.getVal().uint ) ) )
         elif ( __OP.uint == 0x2B ):
             # SW
             self.storage.setW( self.DO.getVal(), self.AO.getVal().uint )
@@ -480,10 +482,11 @@ class DLX_Pipeline:
         else:
             self.fDataHazard = False
     
-    def insertBubble(self):
+    def insertBubbleID(self):
         self.A = BitArray(uint=0, length=32)
         self.B = BitArray(uint=0, length=32)
         self.Imm = BitArray(uint=0, length=32)
+        self.insFIFO[1] = BitArray(uint=0, length=32)
 
     def doPipeNext(self):
         mylogger.debug("do Function: %s", (inspect.stack()[0][3]))
@@ -495,7 +498,7 @@ class DLX_Pipeline:
         self.doMEM()
         self.doEX()
         if(self.cStallCnt < 0):
-            self.insertBubble()
+            self.insertBubbleID()
             self.cStallCnt -= 1
         else:
             self.doID()
@@ -506,6 +509,10 @@ class DLX_Pipeline:
             return self.PC
         elif name == 'IR':
             return self.IR
+        elif name == 'NPC':
+            return self.NPC
+        elif name == 'NPC_2':
+            return self.NPC_2
         elif name == 'A':
             return self.A
         elif name == 'B':
@@ -542,6 +549,7 @@ class DLX_Pipeline:
         self.fForwarding = True
         self.fDataHazard = False
         self.fCtrlHazard = False
+        self.fTrap = False
         self.cStallCnt = 0
         
 
