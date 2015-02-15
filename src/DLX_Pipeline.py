@@ -383,7 +383,7 @@ class DLX_Pipeline:
             self.fJump = True
         elif ( __OP.uint == 0x04 or __OP.uint == 0x05 ):
             #  BEQZ                BNEZ  
-            if (self.Cond.getVal().hex == '0x0001'):
+            if (self.Cond.getVal().uint == 0x01):
                 self.fJump = True
             else:
                 self.fJump = False
