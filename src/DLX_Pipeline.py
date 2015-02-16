@@ -458,46 +458,47 @@ class DLX_Pipeline:
         # checking for hazards
         self.fDataHazard = False
         self.cStallCnt = 0
-        if not(self.insFIFO[1].uint == 0):
-            if( __rd_id == __rs1_if):
-                # Hazard between IF and ID
-                self.fDataHazard = True
-                # do two stalls
-                self.cStallCnt = 2
-                mylogger.debug("DataHazard: ID -> IF")
-            elif( __rd_id == __rs2_if):
-                # Hazard between IF and ID
-                self.fDataHazard = True
-                # do two stalls
-                self.cStallCnt = 2
-                mylogger.debug("DataHazard: ID -> IF")
-        if not(self.insFIFO[2].uint == 0):
-            if( __rd_ex ==  __rs1_if ):
-                # Hazard between IF and EX
-                self.fDataHazard = True
-                # do one stall
-                self.cStallCnt = 1
-                mylogger.debug("DataHazard: EX -> IF")
-            elif ( __rd_ex == __rs2_if ):
-                # Hazard between IF and EX
-                self.fDataHazard = True
-                # do one stall
-                self.cStallCnt = 1
-                mylogger.debug("DataHazard: EX -> IF")
+        if( __rd_id == __rs1_if and __rs1_if > 0):
+            # Hazard between IF and ID
+            self.fDataHazard = True
+            # do two stalls
+            self.cStallCnt = 2
+            mylogger.debug("DataHazard: ID -> IF")
+        elif( __rd_id == __rs2_if and __rs2_if > 0):
+            # Hazard between IF and ID
+            self.fDataHazard = True
+            # do two stalls
+            self.cStallCnt = 2
+            mylogger.debug("DataHazard: ID -> IF")
+        if( __rd_ex ==  __rs1_if and __rs1_if > 0):
+            # Hazard between IF and EX
+            self.fDataHazard = True
+            # do one stall
+            self.cStallCnt = 1
+            mylogger.debug("DataHazard: EX -> IF")
+        elif ( __rd_ex == __rs2_if and __rs2_if > 0):
+            # Hazard between IF and EX
+            self.fDataHazard = True
+            # do one stall
+            self.cStallCnt = 1
+            mylogger.debug("DataHazard: EX -> IF")
     
     def insertBubbleID(self):
-        mylogger.debug("Bubble")
+        mylogger.debug("Bubble ID")
         self.A.setVal( BitArray(uint=0, length=32) )
         self.B.setVal( BitArray(uint=0, length=32) )
         self.Imm.setVal( BitArray(uint=0, length=32) )
         self.insFIFO[1] = BitArray(uint=0, length=32)
     def insertBubbleEX(self):
+        mylogger.debug("Bubble EX")
         self.AO.setVal( BitArray(uint=0, length=32) )
         self.insFIFO[2] = BitArray(uint=0, length=32)
     def insertBubbleMEM(self):
+        mylogger.debug("Bubble MEM")
         self.LMD.setVal( BitArray(uint=0, length=32) )
         self.insFIFO[3] = BitArray(uint=0, length=32)
     def insertBubbleWB(self):
+        mylogger.debug("Bubble WB")
         self.insFIFO[4] = BitArray(uint=0, length=32)
 
     def doPipeNext(self):
@@ -505,7 +506,7 @@ class DLX_Pipeline:
         mylogger.debug("PC:       %d", self.PC.getVal().uint)
         mylogger.debug("Instruction FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         self.__shiftFIFO()
-        # self.DataHazard = self.detectDataHazard()
+        self.DataHazard = self.detectDataHazard()
 
         self.doWB()
         self.doMEM()

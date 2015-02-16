@@ -28,26 +28,16 @@ def setOpenFileName():
     memmod.setContent(mySIM.storage)
     return fileName
 
-def Reset():
-    # construct and connect the models to the views
-    progmod = ProgramModel(mySW.ui.programview)
-    pipemod = PipelineModel(mySW.ui.pipeview, mySIM)
-    regmod = RegisterModel(mySW.ui.registerview)
-    memmod = MemoryModel(mySW.ui.memoryview)
-    # setup the initial content of the models
-    pipemod.setContentInitial()
-    # actually reset the DLX
-
 def goNext():
     mySIM.doPipe(1)
     pipemod.updateContent()
-    regmod.updateContent()
+    regmod.updateContent(mySIM)
 
 def goMore():
     num_steps = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert a Number:", 2)
     mySIM.doPipe(num_steps)
     pipemod.updateContent()
-    regmod.updateContent()
+    regmod.updateContent(mySIM)
 
 def Run():
     #myStubSIM.NextStep(True)
@@ -75,6 +65,15 @@ def Reset():
     answer = dialog.exec()
     print(answer)
     if(answer == 1024):
+        # construct and connect the models to the views
+        progmod = ProgramModel(mySW.ui.programview)
+        pipemod = PipelineModel(mySW.ui.pipeview, mySIM)
+        regmod = RegisterModel(mySW.ui.registerview)
+        memmod = MemoryModel(mySW.ui.memoryview)
+        # setup the initial content of the models
+        pipemod.setContentInitial()
+        regmod.setContentInitial()
+        # actually reset the DLX
         mySIM.pipe.ResetPipeline()
 
 if __name__ == "__main__":

@@ -95,7 +95,7 @@ class PipelineModel(Model):
             label = self.model.addText("IF")
             label.setX(CurserX)
             label.setY(CurserY)
-        if(pSim.zustand[4] != 0):
+        if(self.pSim.zustand[4] != 0):
             idx = self.pSim.zustand[4]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
@@ -128,12 +128,18 @@ class RegisterModel(Model):
         # Add all listed Registers
         for name in sim.pipe.piperegs:
             self.item.append( QtGui.QStandardItem( name +"\t"+ repr(sim.pipe.getPipeRegByName(name).getVal().int) ) )
+        for i in range(0,31):
+            self.item.append( QtGui.QStandardItem( sim.pipe.regbank.getRegByID(i).getName() +"\t"+ repr(sim.pipe.regbank.getRegByID(i).getVal().int) ) )
         # Add the items to the model
         for i in range(0, len(self.item)-1):
             self.model.appendRow(self.item[i])
     def updateContent(self,sim):
+        for name in sim.pipe.piperegs:
+            self.item[sim.pipe.piperegs.index(name) +1] = QtGui.QStandardItem( name +"\t"+ repr(sim.pipe.getPipeRegByName(name).getVal().int) )
+        for i in range(0,31):
+            self.item[len(sim.pipe.piperegs)+i] = QtGui.QStandardItem( sim.pipe.regbank.getRegByID(i).getName() +"\t"+ repr(sim.pipe.regbank.getRegByID(i).getVal().int) )
         # Add the items to the model
-        for i in range(1, self.item.length-1):
+        for i in range(1, len(self.item)-1):
             self.model.setItem(i, self.item[i])
 
 def StatisticsModel(Model):
