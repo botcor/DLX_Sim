@@ -38,15 +38,17 @@ def Reset():
     # actually reset the DLX
 
 def goNext():
-    myStubSIM.NextStep(False)
-    pipemod.setContent()
+    mySIM.doPipe(1)
+    pipemod.updateContent()
 
 def goMore():
     num_steps = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert a Number:", 2)
+    mySIM.doPipe(num_steps)
+    pipemod.updateContent()
 
 def Run():
-    myStubSIM.NextStep(True)
-    pipemod.setContent()
+    #myStubSIM.NextStep(True)
+    pipemod.updateContent()
 
 def quitApp():
     app.quit()
@@ -65,7 +67,7 @@ def showMemory(checked):
 
 def showPipeline(checked):
     if(checked):
-        pipemod.setContent()
+        pipemod.updateContent()
 
 def changeMemSize():
     new_size = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert the new size:", mySIM.pipe.storage.size)

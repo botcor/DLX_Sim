@@ -71,7 +71,7 @@ class Simulator:
 
         mylogger.debug("Funktion %s  Datei: %s wurde in den Speicher geschrieben", (inspect.stack()[0][3]), filename)
 
-    def doPipe(number):
+    def doPipe(self, number):
         self.num = number
         self.ersterBefehlinDurchgang = (len(befehl) - 1)    
         while(self.zustand[4] == (self.ersterBefehlinDurchgang + self.num)):

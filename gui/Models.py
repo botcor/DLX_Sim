@@ -50,7 +50,7 @@ class PipelineModel(Model):
         self.model.addLine(0,0,190,0,self.Pen)
         self.model.addLine(0,25,190,25,self.Pen)
         self.model.addText("Command", self.Font)
-    def setContent(self):
+    def updateContent(self):
         CurserX = 150 + self.Colm_Width * self.pSim.Cycle
         CurserY = 30 + self.Line_Height * self.pSim.CommandIndex
         # add the new content of the current turn
@@ -66,7 +66,7 @@ class PipelineModel(Model):
         self.model.addLine(CurserX + self.Colm_Width, 0, CurserX + self.Colm_Width, 400, self.Pen1)
         # add the rectangles
 
-        if(pSim.CommandStatus.count('IF') == 1):
+        if(pSim.zustand[1] != 0):
             idx = pSim.CommandStatus.index('IF')
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
@@ -80,21 +80,21 @@ class PipelineModel(Model):
             label = self.model.addText("IF")
             label.setX(CurserX)
             label.setY(CurserY)
-        if(pSim.CommandStatus.count('EX') == 1)
+        if(pSim.CommandStatus.count('EX') == 1):
             idx = pSim.CommandStatus.index('EX')
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush3)
             label = self.model.addText("IF")
             label.setX(CurserX)
             label.setY(CurserY)
-        if(pSim.CommandStatus.count('MEM') == 1)
+        if(pSim.CommandStatus.count('MEM') == 1):
             idx = pSim.CommandStatus.index('MEM')
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
             label = self.model.addText("IF")
             label.setX(CurserX)
             label.setY(CurserY)
-        if(pSim.CommandStatus.count('WB') == 1)
+        if(pSim.CommandStatus.count('WB') == 1):
             idx = pSim.CommandStatus.index('WB')
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
