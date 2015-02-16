@@ -76,7 +76,7 @@ class Simulator:
     def doPipe(self, number):
         self.num = number
         self.taktEnd = (self.takt + self.num)  
-        while(self.takt <= self.taktEnd):
+        while(self.takt < self.taktEnd):
             self.pipe.doPipeNext()
             x = BitArray(self.pipe.IR.getVal())
             print(x)

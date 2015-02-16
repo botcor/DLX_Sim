@@ -51,13 +51,14 @@ class PipelineModel(Model):
         self.model.addLine(0,25,190,25,self.Pen)
         self.model.addText("Command", self.Font)
     def updateContent(self):
-        CurserX = 150 + self.Colm_Width * self.pSim.Cycle
-        CurserY = 30 + self.Line_Height * self.pSim.CommandIndex
+        CurserX = 150 + self.Colm_Width * self.pSim.takt
+        self.CommandIndex = (len(self.pSim.befehl) - 1)
+        CurserY = 30 + self.Line_Height * self.CommandIndex
         # add the new content of the current turn
         # add the new command and number of the current clock cycle
-        new_command = self.model.addText(self.pSim.Commands[self.pSim.CommandIndex])
+        new_command = self.model.addText(self.pSim.befehl[self.CommandIndex])
         new_command.setY(CurserY)
-        new_num = self.model.addText(str(self.pSim.Cycle),self.Font)
+        new_num = self.model.addText(str(self.pSim.takt),self.Font)
         new_num.setX(CurserX)
         # extend the two top lines
         self.model.addLine(CurserX + self.Colm_Width, 25, self.Colm_Width, 25, self.Pen)
@@ -66,36 +67,36 @@ class PipelineModel(Model):
         self.model.addLine(CurserX + self.Colm_Width, 0, CurserX + self.Colm_Width, 400, self.Pen1)
         # add the rectangles
 
-        if(pSim.zustand[0] != 0):
-            idx = pSim.zustand[0]
+        if(self.pSim.zustand[0] != 0):
+            idx = self.pSim.zustand[0]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
             label = self.model.addText("IF")
             label.setX(CurserX)
             label.setY(CurserY)
-        if(pSim.zustand[1] != 0):
-            idx = pSim.zustand[1]
+        if(self.pSim.zustand[1] != 0):
+            idx = self.pSim.zustand[1]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush2)
             label = self.model.addText("IF")
             label.setX(CurserX)
             label.setY(CurserY)
-        if(pSim.zustand[2] != 0):
-            idx = pSim.zustand[2]
+        if(self.pSim.zustand[2] != 0):
+            idx = self.pSim.zustand[2]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush3)
             label = self.model.addText("IF")
             label.setX(CurserX)
             label.setY(CurserY)
-        if(pSim.zustand[3] != 0):
-            idx = pSim.zustand[3]
+        if(self.pSim.zustand[3] != 0):
+            idx = self.pSim.zustand[3]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
             label = self.model.addText("IF")
             label.setX(CurserX)
             label.setY(CurserY)
         if(pSim.zustand[4] != 0):
-            idx = pSim.zustand[4]
+            idx = self.pSim.zustand[4]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
             label = self.model.addText("IF")
