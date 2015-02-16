@@ -414,9 +414,11 @@ class DLX_Pipeline:
         return 0
 
     def detectDataHazard(self):
+        mylogger.critical("do Function: %s",(inspect.stack()[0][3]))
         __OP_ex = self.insFIFO[2][0:6]
         __OP_id = self.insFIFO[1][0:6]
         __OP_if = self.insFIFO[0][0:6]
+        
         
         # determine the affected registers in IF, ID and EX
         if ( __OP_ex.uint == 0x00 ):
@@ -428,6 +430,8 @@ class DLX_Pipeline:
         else:
             # I-Type
             __rd_ex = self.insFIFO[2][11:16].uint
+        
+        mylogger.critical("detect Hazard RD_EX: %s", __rd_ex)
 
         # determine the rd register in stage ID
         if ( __OP_id.uint == 0x00 ):
@@ -439,6 +443,8 @@ class DLX_Pipeline:
         else:
             # I-Type
             __rd_id = self.insFIFO[1][0:6].uint
+
+        mylogger.critical("detect Hazard RD_ID: %s", __rd_id)
 
         # determine the source registers in stage IF
         if ( __OP_if.uint == 0x00 ):
@@ -454,6 +460,8 @@ class DLX_Pipeline:
             __rs1_if = self.insFIFO[0][6:11].uint
             __rs2_if = 0xFF
 
+        mylogger.critical("detect Hazard RS1_IF: %s", __rs1_if)
+        mylogger.critical("detect Hazard RS2_IF: %s", __rs2_if)
         
         # checking for hazards
         self.fDataHazard = False

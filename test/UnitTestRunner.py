@@ -41,9 +41,9 @@ testmodules = [
     # 'IntegTestPipeline_IF',
     #'IntegTestPipeline_ID',
     # 'IntegTestPipeline_EX',
-    #'IntegTestPipeline_MEM',
+    'IntegTestSim',
     #'UnitTestSim',
-    'IntegTestPipeline'
+    #'IntegTestPipeline'
     ]
 
 suite = unittest.TestSuite()
