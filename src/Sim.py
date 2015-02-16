@@ -6,6 +6,7 @@ from DLX_Register import *
 from DLX_Pipeline import *
 from DLX_Translator import *
 
+
 #create logger
 mylogger = logging.getLogger("Simulator")
 
@@ -23,6 +24,7 @@ class Simulator:
         self.cnt = 0
         self.takt = 0
         self.fStall = False
+        self.TL = DLX_Disassembly()
 
 
     def collectData(self, filename):
@@ -73,51 +75,57 @@ class Simulator:
 
     def doPipe(self, number):
         self.num = number
-        self.ersterBefehlinDurchgang = (len(befehl) - 1)    
-        while(self.zustand[4] == (self.ersterBefehlinDurchgang + self.num)):
+        self.taktEnd = (self.takt + self.num)  
+        while(self.takt <= self.taktEnd):
             self.pipe.doPipeNext()
-            self.befehl.append(trans.OperationToAsm(self.pipe.IR.getVal()))
-            if(len(befehl) == 1):
+            x = BitArray(self.pipe.IR.getVal())
+            print(x)
+            self.befehl.append(self.TL.OperationToAsm(x))
+            if(len(self.befehl) == 1):
                 self.fStall = False
                 self.zustand[0] = (len(befehl) - 1)
                 self.takt += 1
-            if(len(befehl) == 2):
+            if(len(self.befehl) == 2):
                 self.fStall = False
-                self.zustand[0] = (len(befehl) - 1)
-                self.zustand[1] = (len(befehl) - 2)
+                self.zustand[0] = (len(self.befehl) - 1)
+                self.zustand[1] = (len(self.befehl) - 2)
                 self.takt += 1
-            elif(len(befehl) == 3):
+            elif(len(self.befehl) == 3):
                 self.fStall = False
-                self.zustand[0] = (len(befehl) - 1)
-                self.zustand[1] = (len(befehl) - 2)
-                self.zustand[2] = (len(befehl) - 3)
+                self.zustand[0] = (len(self.befehl) - 1)
+                self.zustand[1] = (len(self.befehl) - 2)
+                self.zustand[2] = (len(self.befehl) - 3)
                 self.takt += 1
-            elif(len(befehl) == 4):
+            elif(len(self.befehl) == 4):
                 self.fStall = False
-                self.zustand[0] = (len(befehl) - 1)
-                self.zustand[1] = (len(befehl) - 2)
-                self.zustand[2] = (len(befehl) - 3)
-                self.zustand[3] = (len(befehl) - 4)
+                self.zustand[0] = (len(self.befehl) - 1)
+                self.zustand[1] = (len(self.befehl) - 2)
+                self.zustand[2] = (len(self.befehl) - 3)
+                self.zustand[3] = (len(self.befehl) - 4)
                 self.takt += 1
-            elif(len(befehl) == 4):
+            elif(len(self.befehl) == 4):
                 self.fStall = False
-                self.zustand[0] = (len(befehl) - 1)
-                self.zustand[1] = (len(befehl) - 2)
-                self.zustand[2] = (len(befehl) - 3)
-                self.zustand[3] = (len(befehl) - 4)
-                self.zustand[4] = (len(befehl) - 4)
+                self.zustand[0] = (len(self.befehl) - 1)
+                self.zustand[1] = (len(self.befehl) - 2)
+                self.zustand[2] = (len(self.befehl) - 3)
+                self.zustand[3] = (len(self.befehl) - 4)
+                self.zustand[4] = (len(self.befehl) - 4)
                 self.takt += 1
             else:
                 if(self.pipe.cStallCnt < 1):
                     self.fStall = False
-                    zustand[0] = (len(befehl) - 1)
-                    zustand[1] = (len(befehl) - 2)
-                    zustand[2] = (len(befehl) - 3)
-                    zustand[3] = (len(befehl) - 4)
-                    zustand[4] = (len(befehl) - 4)
-                    takt += 1
+                    self.zustand[0] = (len(self.befehl) - 1)
+                    self.zustand[1] = (len(self.befehl) - 2)
+                    self.zustand[2] = (len(self.befehl) - 3)
+                    self.zustand[3] = (len(self.befehl) - 4)
+                    self.zustand[4] = (len(self.befehl) - 4)
+                    self.takt += 1
                 else:
                     self.fStall = True
-                    zustand[2] = (len(befehl) - 3)
-                    zustand[3] = (len(befehl) - 4)
-                    zustand[4] = (len(befehl) - 4)
+                    self.zustand[1] = 0
+                    self.zustand[2] = (len(self.befehl) - 3)
+                    self.zustand[3] = (len(self.befehl) - 4)
+                    self.zustand[4] = (len(self.befehl) - 4)
+                    self.takt += 1
+        
+
