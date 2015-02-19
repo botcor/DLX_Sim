@@ -73,22 +73,22 @@ class DLX_Pipeline:
     def doIF(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
+        if (self.fJump == True):
+            self.PC.setVal( self.AO_2.getVal() )
+            self.fTrap = False
+        elif not (self.fTrap == True):
+            self.PC.setVal( self.NPC.getVal() )
         # get the next word from storage (indicated by PC) and store it to the IR Register
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
         # store the Instruction to insFIFO as well
         self.insFIFO[0] = self.IR.getVal()
         
         # determin if it is a TRAP
-        if(self.insFIFO[0][0:6] == 0x11):
+        if(self.insFIFO[0][0:6].uint == 0x11):
             self.fTrap = True
 
         # determin the next Program Counter
         self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
-        if (self.fJump == True):
-            self.PC.setVal( self.AO_2.getVal() )
-            self.fTrap = False
-        elif not (self.fTrap == True):
-            self.PC.setVal( self.NPC.getVal() )
         
     def doID(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
