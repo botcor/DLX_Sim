@@ -12,13 +12,12 @@ class DLX_Speicher:
         x =  BitArray(uint=0, length=8)
         for i in range(0, size):
             self.storage.append(x)
-
+            
     def reset(self):
-        mylogger.debug("DLX_Speicher wurde zurückgesetzt")
-        x =  BitArray(uint=0, length=8)
-        for i in range(0, size):
-            self.storage[i] = x
-    
+        mylogger.debug("Speicher wurde zurueckgesetzt")
+        for i in range(0, self.size):
+            self.storage[i] = BitArray(uint=0, length=8)
+                
     def setB(self, adr, value):
         self.storage[adr] = value
 
