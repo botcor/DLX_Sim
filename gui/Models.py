@@ -78,28 +78,28 @@ class PipelineModel(Model):
             idx = self.pSim.zustand[1]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush2)
-            label = self.model.addText("IF")
+            label = self.model.addText("ID")
             label.setX(CurserX)
             label.setY(CurserY)
         if(self.pSim.zustand[2] != 0):
             idx = self.pSim.zustand[2]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush3)
-            label = self.model.addText("IF")
+            label = self.model.addText("EX")
             label.setX(CurserX)
             label.setY(CurserY)
         if(self.pSim.zustand[3] != 0):
             idx = self.pSim.zustand[3]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
-            label = self.model.addText("IF")
+            label = self.model.addText("MEM")
             label.setX(CurserX)
             label.setY(CurserY)
         if(self.pSim.zustand[4] != 0):
             idx = self.pSim.zustand[4]
             CurserY = 30 + self.Line_Height * idx
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
-            label = self.model.addText("IF")
+            label = self.model.addText("WB")
             label.setX(CurserX)
             label.setY(CurserY)
 

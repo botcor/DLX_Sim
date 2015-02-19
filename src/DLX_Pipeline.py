@@ -77,13 +77,18 @@ class DLX_Pipeline:
         self.IR.setVal( BitArray( uint=( self.storage.getW( self.PC.getVal().uint ).uint), length=32 ) )
         # store the Instruction to insFIFO as well
         self.insFIFO[0] = self.IR.getVal()
+        
+        # determin if it is a TRAP
+        if(self.insFIFO[0][0:6] == 0x11):
+            self.fTrap = True
 
         # determin the next Program Counter
         self.NPC.setVal( BitArray( uint=( self.PC.getVal().uint + 4 ), length=32 ) )
         if (self.fJump == True):
             self.PC.setVal( self.AO_2.getVal() )
-        else:
-            self.PC.setVal( self.NPC.getVal() )  
+            self.fTrap = False
+        elif not (self.fTrap == True):
+            self.PC.setVal( self.NPC.getVal() )
         
     def doID(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
@@ -476,7 +481,7 @@ class DLX_Pipeline:
             # do two stalls
             self.cStallCnt = 2
             mylogger.debug("DataHazard: ID -> IF")
-        if( __rd_ex ==  __rs1_if and __rs1_if > 0):
+        elif( __rd_ex ==  __rs1_if and __rs1_if > 0):
             # Hazard between IF and EX
             self.fDataHazard = True
             # do one stall
@@ -524,7 +529,6 @@ class DLX_Pipeline:
 
         if(self.cStallCnt > 0):
             self.insertBubbleID()
-            self.cStallCnt -= 1
         elif(self.fJump == True):
             self.insertBubbleID()
         else:
@@ -532,6 +536,8 @@ class DLX_Pipeline:
 
         if(self.cStallCnt == 0):
             self.doIF()
+        else:
+            self.cStallCnt -= 1
 
     def getPipeRegByName(self, name):
         if name == 'PC':
