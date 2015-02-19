@@ -62,8 +62,6 @@ class DLX_Pipeline:
         self.insFIFO[3] = self.insFIFO[2]
         self.insFIFO[2] = self.insFIFO[1]
         self.insFIFO[1] = self.insFIFO[0]
-        self.insFIFO[0] = BitArray(uint=0, length=32)
-        #self.insFIFO.appendleft(BitArray(uint=0, length=32))
         mylogger.debug("SHIFT FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
 
     def __extend(self, value):
@@ -421,10 +419,10 @@ class DLX_Pipeline:
         # determine the affected registers in IF, ID and EX
         if ( __OP_ex.uint == 0x00 ):
             # R-Type
-            __rd_ex = self.insFIFO[2][16:20].uint
+            __rd_ex = self.insFIFO[2][16:21].uint
         elif ( __OP_ex.uint <= 0x03 ):
             # J-Type
-            __rd_ex = 0
+            __rd_ex = 0xFF
         else:
             # I-Type
             __rd_ex = self.insFIFO[2][11:16].uint
@@ -432,13 +430,13 @@ class DLX_Pipeline:
         # determine the rd register in stage ID
         if ( __OP_id.uint == 0x00 ):
             # R-Type
-            __rd_id = self.insFIFO[1][0:6].uint
+            __rd_id = self.insFIFO[1][16:21].uint
         elif ( __OP_id.uint <= 0x03 ):
             # J-Type
             __rd_id = 0xFF
         else:
             # I-Type
-            __rd_id = self.insFIFO[1][0:6].uint
+            __rd_id = self.insFIFO[1][11:16].uint
 
         # determine the source registers in stage IF
         if ( __OP_if.uint == 0x00 ):
@@ -505,8 +503,8 @@ class DLX_Pipeline:
         mylogger.debug("do Function: %s", (inspect.stack()[0][3]))
         mylogger.debug("PC:       %d", self.PC.getVal().uint)
         mylogger.debug("Instruction FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
-        self.__shiftFIFO()
         self.DataHazard = self.detectDataHazard()
+        self.__shiftFIFO()
 
         self.doWB()
         self.doMEM()
