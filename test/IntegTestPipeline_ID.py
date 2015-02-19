@@ -78,7 +78,7 @@ class TestCasesPipe_ID(unittest.TestCase):
 
     def test_doID_R2(self):
         mylogger.info("TestCase: test_doID_R2 START")
-        #SRL r15, r3, r2
+        #SRL r15, r31, r2
         self.ins = BitArray(hex='0x03E27806')
         self.pipe.IR.setVal(self.ins)
         self.pipe.doID()

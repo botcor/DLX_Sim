@@ -79,7 +79,6 @@ class Simulator:
         while(self.takt < self.taktEnd):
             self.pipe.doPipeNext()
             x = BitArray(self.pipe.IR.getVal())
-            print(x)
             self.befehl.append(self.TL.OperationToAsm(x))
             if(len(self.befehl) == 1):
                 self.fStall = False
@@ -87,7 +86,7 @@ class Simulator:
                 self.takt += 1
             if(len(self.befehl) == 2):
                 self.fStall = False
-                self.zustand[0] = (len(self.befehl) - 1)
+                self.zustand[0] = ((len(self.befehl) - 1))
                 self.zustand[1] = (len(self.befehl) - 2)
                 self.takt += 1
             elif(len(self.befehl) == 3):
@@ -122,8 +121,7 @@ class Simulator:
                     self.takt += 1
                 else:
                     self.fStall = True
-                    self.zustand[1] = 0
-                    self.zustand[2] = (len(self.befehl) - 3)
+                    self.zustand[2] = 0
                     self.zustand[3] = (len(self.befehl) - 4)
                     self.zustand[4] = (len(self.befehl) - 4)
                     self.takt += 1
