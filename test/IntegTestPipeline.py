@@ -13,6 +13,7 @@ class TestCasesPipe(unittest.TestCase):
         mylogger.info("----------Unit Test Pipeline SetUp----------")
         cls.regb = DLX_Reg_Bank()
         cls.storage = DLX_Speicher()
+        cls.storage.reset()
         cls.a = BitArray(int=8, length=32) #r3
         #fill data storage with testvalues: 
         cls.ins1 = BitArray(hex='0x206F00FF') #ADDI r15, r3, 255
@@ -36,7 +37,7 @@ class TestCasesPipe(unittest.TestCase):
         self.storage.setW(0, self.ins1)
         self.pipe.doPipeNext() #IF
         self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0x206F00FF').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint, "Wrong Value in NPC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint + 4, "Wrong Value in NPC")
         self.assertEqual(self.pipe.insFIFO[0], self.pipe.IR.getVal() , "")
         self.pipe.doPipeNext() #ID
         self.assertEqual(self.pipe.Imm.getVal().int, 255 , "Wrong Value in Imm")
@@ -56,7 +57,7 @@ class TestCasesPipe(unittest.TestCase):
         self.regb.Bank[2].setVal(self.r2)
         self.pipe.doPipeNext() #IF
         self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0x00627825').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint, "Wrong Value in NPC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint + 4, "Wrong Value in NPC")
         self.assertEqual(self.pipe.insFIFO[0], self.pipe.IR.getVal() , "")
         self.pipe.doPipeNext() #ID
         self.assertEqual(self.pipe.A.getVal().int, 8 , "Wrong Value in A")
@@ -77,7 +78,7 @@ class TestCasesPipe(unittest.TestCase):
         self.regb.Bank[5].setVal(self.branch)
         self.pipe.doPipeNext() #IF
         self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0x10A00020').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint, "Wrong Value in NPC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint + 4, "Wrong Value in NPC")
         self.assertEqual(self.pipe.insFIFO[0], self.pipe.IR.getVal() , "")
         self.pipe.doPipeNext() #ID
         self.assertEqual(self.pipe.Imm.getVal().int, 32 , "Wrong Value in Imm")
@@ -86,8 +87,9 @@ class TestCasesPipe(unittest.TestCase):
         self.assertEqual(self.pipe.Cond.getVal().int, 1 , "Wrong Value in Cond")
         self.assertEqual(self.pipe.AO.getVal().int, 36 , "Wrong Value in AO")
         self.pipe.doPipeNext() #MEM
-        self.assertEqual(self.pipe.PC.getVal().uint, 36, "Wrong Value in PC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, 36, "Wrong Value in NPC")
         self.pipe.doPipeNext() #WB
+        self.assertEqual(self.pipe.PC.getVal().uint, 36, "Wrong Value in PC")
         mylogger.info("TestCase: test_doPipe_BEQZ0 SUCCESSFUL")
 
     def test_doPipe_BEQZ1(self):
@@ -97,7 +99,7 @@ class TestCasesPipe(unittest.TestCase):
         self.regb.Bank[5].setVal(self.branch)
         self.pipe.doPipeNext() #IF
         self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0x10A00020').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint, "Wrong Value in NPC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint + 4, "Wrong Value in NPC")
         self.assertEqual(self.pipe.insFIFO[0], self.pipe.IR.getVal() , "")
         self.pipe.doPipeNext() #ID
         self.assertEqual(self.pipe.Imm.getVal().int, 32 , "Wrong Value in Imm")
@@ -105,8 +107,9 @@ class TestCasesPipe(unittest.TestCase):
         self.pipe.doPipeNext() #EX
         self.assertEqual(self.pipe.Cond.getVal().int, 0 , "Wrong Value in Cond")
         self.pipe.doPipeNext() #MEM
-        self.assertEqual(self.pipe.PC.getVal().uint, 16, "Wrong Value in PC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, 16, "Wrong Value in NPC")
         self.pipe.doPipeNext() #WB
+        self.assertEqual(self.pipe.PC.getVal().uint, 16, "Wrong Value in PC")
         mylogger.info("TestCase: test_doPipe_BEQZ1 SUCCESSFUL")
 
     def test_doPipe_JAL(self):
@@ -114,7 +117,7 @@ class TestCasesPipe(unittest.TestCase):
         self.storage.setW(0, self.ins4)
         self.pipe.doPipeNext() #IF
         self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0x0C000018').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint, "Wrong Value in NPC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint + 4, "Wrong Value in NPC")
         self.assertEqual(self.pipe.insFIFO[0], self.pipe.IR.getVal() , "")
         self.pipe.doPipeNext() #ID
         self.assertEqual(self.pipe.Imm.getVal().int, 24 , "Wrong Value in Imm")
@@ -122,8 +125,9 @@ class TestCasesPipe(unittest.TestCase):
         self.assertEqual(self.pipe.AO.getVal().int, 24 , "Wrong Value in AO")
         self.assertEqual(self.regb.getRegByID(31).getVal().int, 4 , "Wrong Value in R31")
         self.pipe.doPipeNext() #MEM
-        self.assertEqual(self.pipe.PC.getVal().uint, 24, "Wrong Value in PC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, 24, "Wrong Value in NPC")
         self.pipe.doPipeNext() #WB
+        self.assertEqual(self.pipe.PC.getVal().uint, 24, "Wrong Value in PC")
         mylogger.info("TestCase: test_doPipe_JAL SUCCESSFUL")
 
     def test_doPipe_LW(self):
@@ -135,7 +139,7 @@ class TestCasesPipe(unittest.TestCase):
         self.regb.Bank[2].setVal(self.r2)
         self.pipe.doPipeNext() #IF
         self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0x8C410004').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint, "Wrong Value in NPC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint + 4, "Wrong Value in NPC")
         self.assertEqual(self.pipe.insFIFO[0], self.pipe.IR.getVal() , "")
         self.pipe.doPipeNext() #ID
         self.assertEqual(self.pipe.Imm.getVal().int, 4 , "Wrong Value in Imm")
@@ -157,7 +161,7 @@ class TestCasesPipe(unittest.TestCase):
         self.regb.Bank[2].setVal(self.r2)
         self.pipe.doPipeNext() #IF
         self.assertEqual(self.pipe.IR.getVal().hex, BitArray(hex='0x90410004').hex , "Wrong Value in IR")
-        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint, "Wrong Value in NPC")
+        self.assertEqual(self.pipe.NPC.getVal().uint, self.pipe.PC.getVal().uint + 4, "Wrong Value in NPC")
         self.assertEqual(self.pipe.insFIFO[0], self.pipe.IR.getVal() , "")
         self.pipe.doPipeNext() #ID
         self.assertEqual(self.pipe.Imm.getVal().int, 4 , "Wrong Value in Imm")
@@ -174,6 +178,7 @@ class TestCasesPipe(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         mylogger.info("----------Unit Test Pipeline TearDown----------\n")
+        cls.storage.reset()
         del cls.regb
         del cls.storage
         del cls.alu

@@ -32,5 +32,6 @@ class TestCasesSim(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         mylogger.info("----------Unit Test Simulator TearDown----------\n")
+        cls.sim.storage.reset()
         del cls.sim
         return super().tearDownClass()
