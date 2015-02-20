@@ -25,7 +25,7 @@ def setOpenFileName():
     open_at = "/home/"
     fileName = QtGui.QFileDialog.getOpenFileName(parent, title, open_at, filters)
     mySIM.collectData(fileName[0])
-    memmod.setContent(mySIM.storage)
+    memmod.updateContent(mySIM.storage)
     return fileName
 
 def goNext():
@@ -66,6 +66,9 @@ def Reset():
     answer = dialog.exec()
     print(answer)
     if(answer == 1024):
+        # actually reset the DLX
+        mySIM.pipe.ResetPipeline()
+        mySIM.storage.reset()
         # construct and connect the models to the views
         progmod = ProgramModel(mySW.ui.programview)
         pipemod = PipelineModel(mySW.ui.pipeview, mySIM)
@@ -73,9 +76,7 @@ def Reset():
         memmod = MemoryModel(mySW.ui.memoryview)
         # setup the initial content of the models
         pipemod.setContentInitial()
-        regmod.setContentInitial()
-        # actually reset the DLX
-        mySIM.pipe.ResetPipeline()
+        regmod.setContentInitial(mySIM)
 
 if __name__ == "__main__":
     # general stuff

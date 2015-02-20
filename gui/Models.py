@@ -104,7 +104,7 @@ class PipelineModel(Model):
             label.setY(CurserY)
 
 class MemoryModel(Model):
-    def setContent(self,storage):
+    def updateContent(self,storage):
         item = []
         x = 0
         # Create the first line        
