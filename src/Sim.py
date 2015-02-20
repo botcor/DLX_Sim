@@ -80,7 +80,7 @@ class Simulator:
             pcAlt = self.pipe.PC
             self.pipe.doPipeNext()
             pcNeu = self.pipe.PC
-            if ( pcAlt != pcNeu & self.TL.OperationToAsm(self.pipe.insFIFO[0])[0:3] != "BAD"):
+            if ( (pcAlt != pcNeu) & (self.TL.OperationToAsm(self.pipe.insFIFO[0])[0:3] != "BAD")):
                 self.befehl.append(self.TL.OperationToAsm(self.pipe.insFIFO[0]))
                 if(len(self.befehl) == 2):
                     self.fStall = False
