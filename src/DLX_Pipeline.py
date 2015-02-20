@@ -51,7 +51,7 @@ class DLX_Pipeline:
         self.LMD = DLX_Register(name="LMD")
         # define the Flags and Options
         self.fJump = False
-        self.fForwarding = True
+        self.fForwarding = False
         self.fDataHazard = False
         self.fCtrlHazard = False
         self.fTrap = False

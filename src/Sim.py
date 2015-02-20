@@ -19,12 +19,14 @@ class Simulator:
         self.alu = DLX_ALU()
         self.regb = DLX_Reg_Bank()
         self.pipe = DLX_Pipeline(self.storage, self.alu, self.regb)
-        self.zustand = []
+        self.zustand = [0,0,0,0,0]
         self.befehl = [0]
         self.cnt = 0
         self.takt = 0
         self.fStall = False
         self.TL = DLX_Disassembly()
+        self.pcNeu = -1
+        self.pcAlt = 0
 
 
     def collectData(self, filename):
@@ -75,12 +77,12 @@ class Simulator:
 
     def doPipe(self, number):
         self.num = number
-        self.taktEnd = (self.takt + self.num)  
+        self.taktEnd = (self.takt + self.num)
         while(self.takt < self.taktEnd):
-            pcAlt = self.pipe.PC
+            self.pcAlt = self.pcNeu
             self.pipe.doPipeNext()
-            pcNeu = self.pipe.PC
-            if ( pcAlt != pcNeu & self.TL.OperationToAsm(self.pipe.insFIFO[0])[0:3] != "BAD"):
+            self.pcNeu = self.pipe.PC
+            if ( (self.pcAlt != self.pcNeu) & (self.TL.OperationToAsm(self.pipe.insFIFO[0])[0:3] != "BAD")):
                 self.befehl.append(self.TL.OperationToAsm(self.pipe.insFIFO[0]))
                 if(len(self.befehl) == 2):
                     self.fStall = False
@@ -182,4 +184,5 @@ class Simulator:
                     else:
                         self.zustand[4] = (len(befehl) - 5)
                         self.takt += 1
-            
+            else:
+                self.takt += 1

@@ -56,7 +56,7 @@ class PipelineModel(Model):
         CurserY = 30 + self.Line_Height * self.CommandIndex
         # add the new content of the current turn
         # add the new command and number of the current clock cycle
-        new_command = self.model.addText(self.pSim.befehl[self.CommandIndex])
+        new_command = self.model.addText(str(self.pSim.befehl[self.CommandIndex]))
         new_command.setY(CurserY)
         new_num = self.model.addText(str(self.pSim.takt),self.Font)
         new_num.setX(CurserX)
