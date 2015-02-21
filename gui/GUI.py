@@ -25,20 +25,20 @@ def setOpenFileName():
     open_at = "/home/"
     fileName = QtGui.QFileDialog.getOpenFileName(parent, title, open_at, filters)
     mySIM.collectData(fileName[0])
-    memmod.updateContent(mySIM.storage)
+    memmod.updateContent()
     return fileName
 
 def goNext():
     mySIM.doPipe(1)
     pipemod.updateContent()
-    regmod.updateContent(mySIM)
+    regmod.updateContent()
 
 def goMore():
     num_steps = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert a Number:", 2)
     for i in range (1,num_steps[0]):
         mySIM.doPipe(1)
         pipemod.updateContent()
-        regmod.updateContent(mySIM)
+        regmod.updateContent()
 
 def Run():
     #myStubSIM.NextStep(True)
@@ -70,13 +70,14 @@ def Reset():
         mySIM.pipe.ResetPipeline()
         mySIM.storage.reset()
         # construct and connect the models to the views
-        progmod = ProgramModel(mySW.ui.programview)
+        progmod = ProgramModel(mySW.ui.programview, mySIM)
         pipemod = PipelineModel(mySW.ui.pipeview, mySIM)
-        regmod = RegisterModel(mySW.ui.registerview)
-        memmod = MemoryModel(mySW.ui.memoryview)
+        regmod = RegisterModel(mySW.ui.registerview, mySIM)
+        memmod = MemoryModel(mySW.ui.memoryview, mySIM)
         # setup the initial content of the models
         pipemod.setContentInitial()
-        regmod.setContentInitial(mySIM)
+        regmod.setContentInitial()
+        memmod.setContentInitial()
 
 if __name__ == "__main__":
     # general stuff
@@ -85,13 +86,14 @@ if __name__ == "__main__":
     mySW.show()
     mySIM = Simulator()
     # construct and connect the models to the views
-    progmod = ProgramModel(mySW.ui.programview)
+    progmod = ProgramModel(mySW.ui.programview, mySIM)
     pipemod = PipelineModel(mySW.ui.pipeview, mySIM)
-    regmod = RegisterModel(mySW.ui.registerview)
-    memmod = MemoryModel(mySW.ui.memoryview)
+    regmod = RegisterModel(mySW.ui.registerview, mySIM)
+    memmod = MemoryModel(mySW.ui.memoryview, mySIM)
     # setup the initial content of the models
     pipemod.setContentInitial()
-    regmod.setContentInitial(mySIM)
+    regmod.setContentInitial()
+    memmod.setContentInitial()
     # connect the menu actions to the custom functions
     mySW.ui.action_LoadProgram.triggered.connect(setOpenFileName)
     mySW.ui.action_ResetDLX.triggered.connect(Reset)
