@@ -84,7 +84,6 @@ if __name__ == "__main__":
     mySW = ControlMainWindow()
     mySW.show()
     mySIM = Simulator()
-    myStubSIM = StubSim()
     # construct and connect the models to the views
     progmod = ProgramModel(mySW.ui.programview)
     pipemod = PipelineModel(mySW.ui.pipeview, mySIM)

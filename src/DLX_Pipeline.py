@@ -56,6 +56,7 @@ class DLX_Pipeline:
         self.fCtrlHazard = False
         self.fTrap = False
         self.cStallCnt = 0
+        mylogger.info("Pipeline Flags: %s %s %s %s %s %s",self.fJump,self.fForwarding,self.fDataHazard,self.fCtrlHazard,self.fTrap,self.cStallCnt)
 
     def __shiftFIFO(self):
         self.insFIFO[4] = self.insFIFO[3]
