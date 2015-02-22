@@ -9,7 +9,7 @@ class DLX_Speicher:
     size = 2048
     def __init__(self, size=2048):
         mylogger.debug("DLX_Speicher wurde angelegt")
-        x =  BitArray(uint=0, length=8)
+        x = BitArray(uint=0, length=8)
         for i in range(0, size):
             self.storage.append(x)
             
@@ -17,7 +17,7 @@ class DLX_Speicher:
         mylogger.debug("Speicher wurde zurueckgesetzt")
         for i in range(0, self.size):
             self.storage[i] = BitArray(uint=0, length=8)
-                
+
     def setB(self, adr, value):
         self.storage[adr] = value
 

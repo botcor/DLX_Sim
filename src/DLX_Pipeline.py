@@ -51,11 +51,12 @@ class DLX_Pipeline:
         self.LMD = DLX_Register(name="LMD")
         # define the Flags and Options
         self.fJump = False
-        self.fForwarding = True
+        self.fForwarding = False
         self.fDataHazard = False
         self.fCtrlHazard = False
         self.fTrap = False
         self.cStallCnt = 0
+        mylogger.info("Pipeline Flags: %s %s %s %s %s %s",self.fJump,self.fForwarding,self.fDataHazard,self.fCtrlHazard,self.fTrap,self.cStallCnt)
 
     def __shiftFIFO(self):
         self.insFIFO[4] = self.insFIFO[3]
@@ -71,7 +72,7 @@ class DLX_Pipeline:
         return BitArray(uint=value.uint, length=32)
 
     def doIF(self):
-        mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]))
         mylogger.debug("IF FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
         if not (self.fTrap == True):
             self.PC.setVal( self.NPC.getVal() )
@@ -418,9 +419,14 @@ class DLX_Pipeline:
 
     def detectDataHazard(self):
         mylogger.critical("do Function: %s",(inspect.stack()[0][3]))
-        __OP_ex = self.insFIFO[2][0:6]
-        __OP_id = self.insFIFO[1][0:6]
-        __OP_if = self.insFIFO[0][0:6]
+        if (self.fForwarding == True):
+            __OP_ex = self.insFIFO[3][0:6]
+            __OP_id = self.insFIFO[2][0:6]
+            __OP_if = self.insFIFO[1][0:6]
+        else:
+            __OP_ex = self.insFIFO[2][0:6]
+            __OP_id = self.insFIFO[1][0:6]
+            __OP_if = self.insFIFO[0][0:6]
         
         
         # determine the affected registers in IF, ID and EX
@@ -469,30 +475,46 @@ class DLX_Pipeline:
         # checking for hazards
         self.fDataHazard = False
         self.cStallCnt = 0
+        self.fForwardEX_ID_A = False
+        self.fForwardEX_ID_B = False
+        self.fForwardMEM_ID_A = False
+        self.fForwardMEM_ID_B = False
         if( __rd_id == __rs1_if and __rs1_if > 0):
-            # Hazard between IF and ID
-            self.fDataHazard = True
-            # do two stalls
-            self.cStallCnt = 2
-            mylogger.debug("DataHazard: ID -> IF")
+            if(self.fForwarding == True):
+                self.fForwardEX_ID_A = True
+            else:
+                # Hazard between IF and ID
+                self.fDataHazard = True
+                # do two stalls
+                self.cStallCnt = 2
+                mylogger.debug("DataHazard: ID -> IF")
         elif( __rd_id == __rs2_if and __rs2_if > 0):
-            # Hazard between IF and ID
-            self.fDataHazard = True
-            # do two stalls
-            self.cStallCnt = 2
-            mylogger.debug("DataHazard: ID -> IF")
+            if(self.fForwarding == True):
+                self.fForwardEX_ID_B = True
+            else:
+                # Hazard between IF and ID
+                self.fDataHazard = True
+                # do two stalls
+                self.cStallCnt = 2
+                mylogger.debug("DataHazard: ID -> IF")
         elif( __rd_ex ==  __rs1_if and __rs1_if > 0):
-            # Hazard between IF and EX
-            self.fDataHazard = True
-            # do one stall
-            self.cStallCnt = 1
-            mylogger.debug("DataHazard: EX -> IF")
+            if(self.fForwarding == True):
+                self.fForwardMEM_ID_A = True
+            else:
+                # Hazard between IF and EX
+                self.fDataHazard = True
+                # do one stall
+                self.cStallCnt = 1
+                mylogger.debug("DataHazard: EX -> IF")
         elif ( __rd_ex == __rs2_if and __rs2_if > 0):
-            # Hazard between IF and EX
-            self.fDataHazard = True
-            # do one stall
-            self.cStallCnt = 1
-            mylogger.debug("DataHazard: EX -> IF")
+            if(self.fForwarding == True):
+                self.fForwardMEM_ID_B = True
+            else:
+                # Hazard between IF and EX
+                self.fDataHazard = True
+                # do one stall
+                self.cStallCnt = 1
+                mylogger.debug("DataHazard: EX -> IF")
     
     def insertBubbleID(self):
         mylogger.debug("Bubble ID")

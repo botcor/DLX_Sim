@@ -5,28 +5,19 @@ from PySide import QtCore, QtGui
 from bitstring import *
 
 class Model():
-    def __init__(self, model_of):    
+    def __init__(self, model_of, pSim):    
         self.model = QtGui.QStandardItemModel(model_of)
         model_of.setModel(self.model)
+        self.pSim = pSim
+        self.items = []
 
 class ProgramModel(Model):
-    def setContent(self):
-        # create an item with a caption
-        item1 = QtGui.QStandardItem("Item in the Model. 1")
-        # Add the item to the model
-        self.model.appendRow(item1)
-        # create an item with a caption
-        item2 = QtGui.QStandardItem("Item in the Model. 2")
-        # Add the item to the model
-        self.model.appendRow(item2)
-        # create an item with a caption
-        item3 = QtGui.QStandardItem("Item in the Model. 3")
-        # Add the item to the model
-        self.model.appendRow(item3)
-        # create an item with a caption
-        item4 = QtGui.QStandardItem("Item in the Model. 4")
-        # Add the item to the model
-        self.model.appendRow(item4)
+    def setContentInitial(self):
+        for instruction in self.pSim.programm:
+            self.items.append(instruction)
+    def updateContent():
+        self.items[self.pSim.pcNeu/4].setBackground( QtGui.QBrush(QtGui.QColor(255,255,0),QtCore.Qt.SolidPattern) )
+        self.items[self.pSim.pcAlt/4].setBackground( QtGui.QBrush(QtGui.QColor(255,255,255),QtCore.Qt.SolidPattern) )
 
 class PipelineModel(Model):
     def __init__(self,model_of, pSim):
@@ -56,7 +47,7 @@ class PipelineModel(Model):
         CurserY = 30 + self.Line_Height * self.CommandIndex
         # add the new content of the current turn
         # add the new command and number of the current clock cycle
-        new_command = self.model.addText(self.pSim.befehl[self.CommandIndex])
+        new_command = self.model.addText(str(self.pSim.befehl[self.CommandIndex]))
         new_command.setY(CurserY)
         new_num = self.model.addText(str(self.pSim.takt),self.Font)
         new_num.setX(CurserX)
@@ -104,43 +95,56 @@ class PipelineModel(Model):
             label.setY(CurserY)
 
 class MemoryModel(Model):
-    def setContent(self,storage):
-        item = []
+    def setContentInitial(self):
         x = 0
         # Create the first line        
-        item.append( QtGui.QStandardItem("Adress\tWord") )
+        self.items.append( QtGui.QStandardItem("Adress\tWord") )
         # Add the item to the model
-        self.model.appendRow(item[x])
-        while x < storage.size/4:
+        self.model.appendRow(self.items[x])
+        while x < self.pSim.storage.size/4:
             # Get item from storage
-            word = BitArray(storage.getW(x*4))
+            word = BitArray(self.pSim.storage.getW(x*4))
             # Create an item
-            item.append( QtGui.QStandardItem( repr(x*4) +"\t"+ word.hex) )
+            self.items.append( QtGui.QStandardItem( repr(x*4) +"\t"+ word.hex) )
             # Add the item to the model
-            self.model.appendRow(item[x])
+            self.model.appendRow(self.items[x])
             x += 1
+    def updateContent(self):
+        self.items = []
+        x = 0
+        # Create the first line        
+        self.items.append( QtGui.QStandardItem("Adress\tWord") )
+        # Add the item to the model
+        self.model.setItem(x, self.items[x])
+        while x < self.pSim.storage.size/4:
+            # Get item from storage
+            word = BitArray(self.pSim.storage.getW(x*4))
+            self.items.append( QtGui.QStandardItem( repr(x*4) +"\t"+ word.hex) )
+            x += 1
+        # Add the items to the model
+        for i in range(1, len(self.items)-1):
+            self.model.setItem(i, self.items[i])
 
 class RegisterModel(Model):
-    def setContentInitial(self,sim):
-        self.item = []
+    def setContentInitial(self):
         # Create the first line        
-        self.item.append( QtGui.QStandardItem("Reg Name\tValue") )
+        self.items.append( QtGui.QStandardItem("Reg Name\tValue") )
         # Add all listed Registers
-        for name in sim.pipe.piperegs:
-            self.item.append( QtGui.QStandardItem( name +"\t"+ repr(sim.pipe.getPipeRegByName(name).getVal().int) ) )
+        for name in self.pSim.pipe.piperegs:
+            self.items.append( QtGui.QStandardItem( name +"\t"+ repr(self.pSim.pipe.getPipeRegByName(name).getVal().int) ) )
         for i in range(0,31):
-            self.item.append( QtGui.QStandardItem( sim.pipe.regbank.getRegByID(i).getName() +"\t"+ repr(sim.pipe.regbank.getRegByID(i).getVal().int) ) )
+            self.items.append( QtGui.QStandardItem( self.pSim.pipe.regbank.getRegByID(i).getName() +"\t"+ repr(self.pSim.pipe.regbank.getRegByID(i).getVal().int) ) )
         # Add the items to the model
-        for i in range(0, len(self.item)-1):
-            self.model.appendRow(self.item[i])
-    def updateContent(self,sim):
-        for name in sim.pipe.piperegs:
-            self.item[sim.pipe.piperegs.index(name) +1] = QtGui.QStandardItem( name +"\t"+ repr(sim.pipe.getPipeRegByName(name).getVal().int) )
+        for i in range(0, len(self.items)-1):
+            self.model.appendRow(self.items[i])
+    def updateContent(self):
+        for name in self.pSim.pipe.piperegs:
+            self.items[self.pSim.pipe.piperegs.index(name) +1] = QtGui.QStandardItem( name +"\t"+ repr(self.pSim.pipe.getPipeRegByName(name).getVal().int) )
         for i in range(0,31):
-            self.item[len(sim.pipe.piperegs)+i] = QtGui.QStandardItem( sim.pipe.regbank.getRegByID(i).getName() +"\t"+ repr(sim.pipe.regbank.getRegByID(i).getVal().int) )
+            self.items[len(self.pSim.pipe.piperegs)+i] = QtGui.QStandardItem( self.pSim.pipe.regbank.getRegByID(i).getName() +"\t"+ repr(self.pSim.pipe.regbank.getRegByID(i).getVal().int) )
         # Add the items to the model
-        for i in range(1, len(self.item)-1):
-            self.model.setItem(i, self.item[i])
+        for i in range(1, len(self.items)-1):
+            self.model.setItem(i, self.items[i])
 
 def StatisticsModel(Model):
     def setContent(self):
