@@ -31,26 +31,29 @@ test_logger = logging.getLogger("TESTRUNNER")
 
 test_logger.info("########## START TESTRUN ##########")
 
+#send stderr to logfile
 original_stderr = sys.stderr
 sys.stderr = TestHandler()
 
-
+#list that contains all testclasses
 testmodules = [
     #'UnitTestsALU',
     #'UnitTestsReg',
-    # 'IntegTestPipeline_IF',
+     #'IntegTestPipeline_IF',
     #'IntegTestPipeline_ID',
-    # 'IntegTestPipeline_EX',
+     #'IntegTestPipeline_EX',
     'IntegTestSim',
-    #'UnitTestSim',
-    #'IntegTestPipeline'
+    'UnitTestSim',
+    'IntegTestPipeline'
     ]
-
+# create a testsuite
 suite = unittest.TestSuite()
 
+#add all testclasses in testmodules to the testsuite
 for t in testmodules:
     suite.addTest(unittest.TestLoader().loadTestsFromName(t))
 
+#run all testcases contained in the testsuite
 testResult = unittest.TextTestRunner(verbosity=2).run(suite)
 
 sys.stderr = original_stderr
