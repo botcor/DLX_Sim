@@ -26,8 +26,9 @@ class Simulator:
         self.takt = 0
         self.fStall = False
         self.TL = DLX_Disassembly()
-        self.neuerPC = 256
+        self.neuerPC = 0
         self.alterPC = 0
+        self.x = 256
 
 
     def collectData(self, filename):
@@ -81,7 +82,6 @@ class Simulator:
         mylogger.debug("Funktion %s  Datei: %s wurde in den Speicher geschrieben", (inspect.stack()[0][3]), filename)
 
     def doPipe(self, number):
-        self.x = 256
         self.num = number
         self.taktEnd = (self.takt + self.num)
         while(self.takt < self.taktEnd):
