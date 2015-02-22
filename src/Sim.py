@@ -28,7 +28,7 @@ class Simulator:
         self.TL = DLX_Disassembly()
         self.neuerPC = 0
         self.alterPC = 0
-        self.x = 256
+        self.x = 4096
 
 
     def collectData(self, filename):
@@ -85,15 +85,11 @@ class Simulator:
         self.num = number
         self.taktEnd = (self.takt + self.num)
         while(self.takt < self.taktEnd):
-            self.alterPC = self.x
             self.pipe.doPipeNext()
-            self.neuerPC = self.pipe.PC.getVal()
+            self.alterPC = self.x
             self.x = self.neuerPC
-            print("pcAlt" + str(self.alterPC))
-            print("pcNeu" + str(self.neuerPC))
-            print("Hier kommt der test" + ((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]))
+            self.neuerPC = self.pipe.PC.getVal()
             if ( (self.alterPC != self.neuerPC) & (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) != "BAD")):
-                print("X")
                 self.befehl.append(self.TL.OperationToAsm(self.pipe.insFIFO[0]))
                 if(len(self.befehl) == 2):
                     self.fStall = False
@@ -197,12 +193,4 @@ class Simulator:
                         self.takt += 1
             else:
                 self.takt += 1
-                print("Y")
-
-
-
-simulator = Simulator()
-simulator.collectData("bubble.dlx")
-simulator.doPipe(3)
-print(simulator.befehl)
 
