@@ -2,13 +2,13 @@ import unittest
 from bitstring import *
 from DLX_ALU import *
 
-#create logger
-mylogger = logging.getLogger("ALU")
 
 class TestCasesALU(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        #create logger
+        mylogger = logging.getLogger("ALU")
         mylogger.info("----------Unit Test ALU SetUp----------")
         cls.alu = DLX_ALU()
         return super().setUpClass()

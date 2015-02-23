@@ -5,13 +5,13 @@ from bitstring import *
 from DLX_Speicher import *
 from Sim import *
 
-#create logger
-mylogger = logging.getLogger("Simulator")
 
 class TestCasesSim(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls):        
+    def setUpClass(cls):
+        #create logger
+        mylogger = logging.getLogger("Simulator")        
         mylogger.info("----------Unit Test Simulator SetUp----------")
         cls.sim = Simulator()
         return super().setUpClass()

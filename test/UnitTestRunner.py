@@ -7,6 +7,8 @@ from UnitTestsReg import *
 from IntegTestPipeline_IF import *
 from IntegTestPipeline_ID import *
 
+#creating a testhandler in order to redirect sdterr to logfile later on
+#ducktyping
 class TestHandler:
     def __init__(self):
         pass
@@ -39,9 +41,9 @@ sys.stderr = TestHandler()
 testmodules = [
     #'UnitTestsALU',
     #'UnitTestsReg',
-     #'IntegTestPipeline_IF',
+    #'IntegTestPipeline_IF',
     #'IntegTestPipeline_ID',
-     #'IntegTestPipeline_EX',
+    #'IntegTestPipeline_EX',
     'IntegTestSim',
     'UnitTestSim',
     'IntegTestPipeline'
