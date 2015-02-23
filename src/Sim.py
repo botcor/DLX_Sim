@@ -88,83 +88,103 @@ class Simulator:
             self.pipe.doPipeNext()
             self.alterPC = self.neuerPC
             self.neuerPC = self.pipe.PC.getVal()
-            if ( (self.alterPC != self.neuerPC) & (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) != "BAD")):
+            if ((self.alterPC != self.neuerPC) & (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) != "BAD")):
                 self.befehl.append(self.TL.OperationToAsm(self.pipe.insFIFO[0]))
                 if(len(self.befehl) == 2):
                     self.fStall = False
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
                         self.zustand[0] = 0
                     else:
                         self.zustand[0] = (len(self.befehl) - 1)
                     self.takt += 1
                 elif(len(self.befehl) == 3):
                     self.fStall = False
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
                         self.zustand[0] = 0
                     else:
                         self.zustand[0] = (len(self.befehl) - 1)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
                         self.zustand[1] = 0
                     else:
                         self.zustand[1] = (len(self.befehl) - 2)
                     self.takt += 1
                 elif(len(self.befehl) == 4):
                     self.fStall = False
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
                         self.zustand[0] = 0
                     else:
                         self.zustand[0] = (len(self.befehl) - 1)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
                         self.zustand[1] = 0
                     else:
                         self.zustand[1] = (len(self.befehl) - 2)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
                         self.zustand[2] = 0
                     else:
                         self.zustand[2] = (len(self.befehl) - 3)
                     self.takt += 1
                 elif(len(self.befehl) == 5):
                     self.fStall = False
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
                         self.zustand[0] = 0
                     else:
                         self.zustand[0] = (len(self.befehl) - 1)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
                         self.zustand[1] = 0
                     else:
                         self.zustand[1] = (len(self.befehl) - 2)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
                         self.zustand[2] = 0
                     else:
                         self.zustand[2] = (len(self.befehl) - 3)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD") | (self.pipe.insFIFO[3] == 0)):
                         self.zustand[3] = 0
                     else:
                         self.zustand[3] = (len(self.befehl) - 4)
                     self.takt += 1
                 else:
                     self.fStall = False
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
                         self.zustand[0] = 0
                     else:
                         self.zustand[0] = (len(self.befehl) - 1)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
                         self.zustand[1] = 0
                     else:
                         self.zustand[1] = (len(self.befehl) - 2)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
                         self.zustand[2] = 0
                     else:
                         self.zustand[2] = (len(self.befehl) - 3)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD") | (self.pipe.insFIFO[3] == 0)):
                         self.zustand[3] = 0
                     else:
                         self.zustand[3] = (len(self.befehl) - 4)
-                    if (((self.TL.OperationToAsm(self.pipe.insFIFO[4]))[0:3]) == "BAD"):
+                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[4]))[0:3]) == "BAD") | (self.pipe.insFIFO[4] == 0)):
                         self.zustand[4] = 0
                     else:
                         self.zustand[4] = (len(self.befehl) - 5)
                     self.takt += 1
             else:
+                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
+                        self.zustand[0] = 0
+                else:
+                        self.zustand[0] = (len(self.befehl) - 1)
+                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
+                        self.zustand[1] = 0
+                else:
+                        self.zustand[1] = (len(self.befehl) - 2)
+                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
+                        self.zustand[2] = 0
+                else:
+                        self.zustand[2] = (len(self.befehl) - 3)
+                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD") | (self.pipe.insFIFO[3] == 0)):
+                        self.zustand[3] = 0
+                else:
+                        self.zustand[3] = (len(self.befehl) - 4)
+                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[4]))[0:3]) == "BAD") | (self.pipe.insFIFO[4] == 0)):
+                        self.zustand[4] = 0
+                else:
+                        self.zustand[4] = (len(self.befehl) - 5)
                 self.takt += 1
 
