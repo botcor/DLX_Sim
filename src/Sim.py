@@ -86,8 +86,7 @@ class Simulator:
         self.taktEnd = (self.takt + self.num)
         while(self.takt < self.taktEnd):
             self.pipe.doPipeNext()
-            self.alterPC = self.x
-            self.x = self.neuerPC
+            self.alterPC = self.neuerPC
             self.neuerPC = self.pipe.PC.getVal()
             if ( (self.alterPC != self.neuerPC) & (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) != "BAD")):
                 self.befehl.append(self.TL.OperationToAsm(self.pipe.insFIFO[0]))

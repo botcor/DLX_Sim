@@ -42,7 +42,7 @@ class PipelineModel(Model):
         self.model.addLine(0,25,190,25,self.Pen)
         self.model.addText("Command", self.Font)
     def updateContent(self):
-        CurserX = 150 + self.Colm_Width * self.pSim.takt
+        CurserX = 150 + self.Colm_Width * (self.pSim.takt - 1)
         self.CommandIndex = (len(self.pSim.befehl) - 1)
         CurserY = 30 + self.Line_Height * self.CommandIndex
         # add the new content of the current turn
