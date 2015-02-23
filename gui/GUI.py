@@ -26,12 +26,14 @@ def setOpenFileName():
     fileName = QtGui.QFileDialog.getOpenFileName(parent, title, open_at, filters)
     mySIM.collectData(fileName[0])
     memmod.updateContent()
+    progmod.setContentInitial()
     return fileName
 
 def goNext():
     mySIM.doPipe(1)
     pipemod.updateContent()
     regmod.updateContent()
+    progmod.updateContent()
 
 def goMore():
     num_steps = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert a Number:", 2)

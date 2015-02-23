@@ -13,11 +13,17 @@ class Model():
 
 class ProgramModel(Model):
     def setContentInitial(self):
-        for instruction in self.pSim.programm:
-            self.items.append(instruction)
-    def updateContent():
-        self.items[self.pSim.pcNeu/4].setBackground( QtGui.QBrush(QtGui.QColor(255,255,0),QtCore.Qt.SolidPattern) )
-        self.items[self.pSim.pcAlt/4].setBackground( QtGui.QBrush(QtGui.QColor(255,255,255),QtCore.Qt.SolidPattern) )
+        for instruction in self.pSim.programView:
+            self.items.append(QtGui.QStandardItem(instruction))
+        # Add the items to the model
+        for i in range(0, len(self.items)-1):
+            self.model.appendRow(self.items[i])
+    def updateContent(self):
+        self.items[int(self.pSim.alterPC.uint/4)].setBackground( QtGui.QBrush(QtGui.QColor(255,255,255), QtCore.Qt.SolidPattern) )
+        self.items[int(self.pSim.neuerPC.uint/4)].setBackground( QtGui.QBrush(QtGui.QColor(255,255,0), QtCore.Qt.SolidPattern) )
+        #update the model
+        for i in range(0, len(self.items)-1):
+            self.model.setItem(i ,self.items[i])
 
 class PipelineModel(Model):
     def __init__(self,model_of, pSim):
@@ -45,6 +51,7 @@ class PipelineModel(Model):
         CurserX = 150 + self.Colm_Width * (self.pSim.takt - 1)
         self.CommandIndex = (len(self.pSim.befehl) - 1)
         CurserY = 30 + self.Line_Height * self.CommandIndex
+        gapCounter = 0
         # add the new content of the current turn
         # add the new command and number of the current clock cycle
         new_command = self.model.addText(str(self.pSim.befehl[self.CommandIndex]))
@@ -60,39 +67,49 @@ class PipelineModel(Model):
 
         if(self.pSim.zustand[0] != 0):
             idx = self.pSim.zustand[0]
-            CurserY = 30 + self.Line_Height * idx
+            CurserY = 30 + self.Line_Height * (idx + gapCounter)
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush1)
             label = self.model.addText("IF")
             label.setX(CurserX)
             label.setY(CurserY)
+        else:
+            gapCounter += 1
         if(self.pSim.zustand[1] != 0):
             idx = self.pSim.zustand[1]
-            CurserY = 30 + self.Line_Height * idx
+            CurserY = 30 + self.Line_Height * (idx + gapCounter)
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush2)
             label = self.model.addText("ID")
             label.setX(CurserX)
             label.setY(CurserY)
+        else:
+            gapCounter += 1
         if(self.pSim.zustand[2] != 0):
             idx = self.pSim.zustand[2]
-            CurserY = 30 + self.Line_Height * idx
+            CurserY = 30 + self.Line_Height * (idx + gapCounter)
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush3)
             label = self.model.addText("EX")
             label.setX(CurserX)
             label.setY(CurserY)
+        else:
+            gapCounter += 1
         if(self.pSim.zustand[3] != 0):
             idx = self.pSim.zustand[3]
-            CurserY = 30 + self.Line_Height * idx
+            CurserY = 30 + self.Line_Height * (idx + gapCounter)
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush4)
             label = self.model.addText("MEM")
             label.setX(CurserX)
             label.setY(CurserY)
+        else:
+            gapCounter += 1
         if(self.pSim.zustand[4] != 0):
             idx = self.pSim.zustand[4]
-            CurserY = 30 + self.Line_Height * idx
+            CurserY = 30 + self.Line_Height * (idx + gapCounter)
             self.model.addRect(CurserX, CurserY, self.Colm_Width, self.Line_Height, self.Pen, self.Brush5)
             label = self.model.addText("WB")
             label.setX(CurserX)
             label.setY(CurserY)
+        else:
+            gapCounter += 1
 
 class MemoryModel(Model):
     def setContentInitial(self):

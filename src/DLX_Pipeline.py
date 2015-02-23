@@ -551,7 +551,7 @@ class DLX_Pipeline:
 
         if(self.cStallCnt > 0):
             self.insertBubbleID()
-        elif(self.fJump == True):
+        elif(self.fJump == True or self.fTrap == True):
             self.insertBubbleID()
         else:
             self.doID()
