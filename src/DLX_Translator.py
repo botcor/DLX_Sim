@@ -11,6 +11,9 @@
 import logging
 from bitstring import BitArray
 
+#create logger
+mylogger = logging.getLogger("Pipeline")
+
 class DLX_Translator:
 
 	# TODO: add all missing possible Values.
@@ -27,14 +30,14 @@ class DLX_Translator:
             i = self.l_instruction.index(ins)
             return self.l_opcode[i]
         elif i>1:
-            print("ERR: Found Instruction " + ins + " more than one time.")
+            mylogger.debug("ERR: Found Instruction " + ins + " more than one time.")
         elif i<1:
-            print("ERR: Instruction " + ins + " not found.")
+            mylogger.debug("ERR: Instruction " + ins + " not found.")
         return "BAD"
 
 	# Translate the opcode (integer) into the instruction name (string).
     def optoins(self, op, func):
-        print("op " + repr(op) + "   func " + repr(func))		
+        mylogger.debug("op " + repr(op) + "   func " + repr(func))		
         if func is not 0:
             i = self.l_funcopc.count(func)
             if i == 1:
@@ -46,9 +49,9 @@ class DLX_Translator:
                 i = self.l_opcode.index(op)
                 return self.l_instruction[i]
         if i > 1:
-            print("ERR: Opcode " + repr(op) + " found more then one time.")
+            mylogger.debug("ERR: Opcode " + repr(op) + " found more then one time.")
         elif i<1:
-            print("ERR: Opcode " + repr(op) + " not found.")
+            mylogger.debug("ERR: Opcode " + repr(op) + " not found.")
         return "BAD"
 
 
@@ -56,7 +59,7 @@ class DLX_Disassembly(DLX_Translator):
     # Determine the Register Name from the Address
     def __Reg(self, Address):
         if Address > 31 or Address < 0:
-            print("ERR: Bad Register address "+ repr(Address) +".")
+            mylogger.debug("ERR: Bad Register address "+ repr(Address) +".")
             return "BAD"
         return "r" + repr(Address)
 	
@@ -91,7 +94,7 @@ class DLX_Disassembly(DLX_Translator):
         return rd +", "+ rs1 +", "+ rs2
 
 	# Translate an Operation to readable Asembler
-    def OperationToAsm(self, Operation):			
+    def OperationToAsm(self, Operation):
         opcode = Operation[0:6].uint
         func = 0
         if opcode == 0x00:

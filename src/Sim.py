@@ -15,19 +15,18 @@ class Simulator:
     def __init__(self):
         mylogger.debug("Simulator wurde angelegt") 
         self.storage = DLX_Speicher()
-        self.trans = DLX_Translator()
         self.alu = DLX_ALU()
         self.regb = DLX_Reg_Bank()
         self.pipe = DLX_Pipeline(self.storage, self.alu, self.regb)
-        self.zustand = [0,0,0,0,0]
-        self.befehl = [0]
+        self.state = [0,0,0,0,0]
+        self.command = [0]
         self.programView = []
         self.cnt = 0
-        self.takt = 0
+        self.cycle = 0
         self.fStall = False
-        self.TL = DLX_Disassembly()
-        self.neuerPC = 0
-        self.alterPC = 0
+        self.disassambly = DLX_Disassembly()
+        self.newPC = 0
+        self.oldPC = 0
         self.x = 4096
 
 
@@ -67,124 +66,124 @@ class Simulator:
                 p3[24:32] = BitArray(hex=y[55:57])
    
                 self.storage.setW((adr),p0)
-                self.programView.append(self.TL.OperationToAsm(p0))
+                self.programView.append(self.disassambly.OperationToAsm(p0))
                 adr = adr+4
                 self.storage.setW(((adr)),p1)
-                self.programView.append(self.TL.OperationToAsm(p1))
+                self.programView.append(self.disassambly.OperationToAsm(p1))
                 adr = adr+4
                 self.storage.setW(((adr)),p2)
-                self.programView.append(self.TL.OperationToAsm(p2))
+                self.programView.append(self.disassambly.OperationToAsm(p2))
                 adr = adr+4
                 self.storage.setW(((adr)),p3)
-                self.programView.append(self.TL.OperationToAsm(p3))
+                self.programView.append(self.disassambly.OperationToAsm(p3))
                 adr = adr+4
 
         mylogger.debug("Funktion %s  Datei: %s wurde in den Speicher geschrieben", (inspect.stack()[0][3]), filename)
 
     def doPipe(self, number):
         self.num = number
-        self.taktEnd = (self.takt + self.num)
-        while(self.takt < self.taktEnd):
+        self.cycleEnd = (self.cycle + self.num)
+        while(self.cycle < self.cycleEnd):
             self.pipe.doPipeNext()
-            self.alterPC = self.neuerPC
-            self.neuerPC = self.pipe.PC.getVal()
-            if ((self.alterPC != self.neuerPC) & (((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) != "BAD")):
-                self.befehl.append(self.TL.OperationToAsm(self.pipe.insFIFO[0]))
-                if(len(self.befehl) == 2):
+            self.oldPC = self.newPC
+            self.newPC = self.pipe.PC.getVal()
+            if ((self.oldPC != self.newPC) & (((self.disassambly.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) != "BAD")):
+                self.command.append(self.disassambly.OperationToAsm(self.pipe.insFIFO[0]))
+                if(len(self.command) == 2):
                     self.fStall = False
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
-                        self.zustand[0] = 0
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
+                        self.state[0] = 0
                     else:
-                        self.zustand[0] = (len(self.befehl) - 1)
-                    self.takt += 1
-                elif(len(self.befehl) == 3):
+                        self.state[0] = (len(self.command) - 1)
+                    self.cycle += 1
+                elif(len(self.command) == 3):
                     self.fStall = False
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
-                        self.zustand[0] = 0
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
+                        self.state[0] = 0
                     else:
-                        self.zustand[0] = (len(self.befehl) - 1)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
-                        self.zustand[1] = 0
+                        self.state[0] = (len(self.command) - 1)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
+                        self.state[1] = 0
                     else:
-                        self.zustand[1] = (len(self.befehl) - 2)
-                    self.takt += 1
-                elif(len(self.befehl) == 4):
+                        self.state[1] = (len(self.command) - 2)
+                    self.cycle += 1
+                elif(len(self.command) == 4):
                     self.fStall = False
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
-                        self.zustand[0] = 0
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
+                        self.state[0] = 0
                     else:
-                        self.zustand[0] = (len(self.befehl) - 1)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
-                        self.zustand[1] = 0
+                        self.state[0] = (len(self.command) - 1)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
+                        self.state[1] = 0
                     else:
-                        self.zustand[1] = (len(self.befehl) - 2)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
-                        self.zustand[2] = 0
+                        self.state[1] = (len(self.command) - 2)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
+                        self.state[2] = 0
                     else:
-                        self.zustand[2] = (len(self.befehl) - 3)
-                    self.takt += 1
-                elif(len(self.befehl) == 5):
+                        self.state[2] = (len(self.command) - 3)
+                    self.cycle += 1
+                elif(len(self.command) == 5):
                     self.fStall = False
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
-                        self.zustand[0] = 0
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
+                        self.state[0] = 0
                     else:
-                        self.zustand[0] = (len(self.befehl) - 1)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
-                        self.zustand[1] = 0
+                        self.state[0] = (len(self.command) - 1)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
+                        self.state[1] = 0
                     else:
-                        self.zustand[1] = (len(self.befehl) - 2)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
-                        self.zustand[2] = 0
+                        self.state[1] = (len(self.command) - 2)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
+                        self.state[2] = 0
                     else:
-                        self.zustand[2] = (len(self.befehl) - 3)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD") | (self.pipe.insFIFO[3] == 0)):
-                        self.zustand[3] = 0
+                        self.state[2] = (len(self.command) - 3)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD") | (self.pipe.insFIFO[3] == 0)):
+                        self.state[3] = 0
                     else:
-                        self.zustand[3] = (len(self.befehl) - 4)
-                    self.takt += 1
+                        self.state[3] = (len(self.command) - 4)
+                    self.cycle += 1
                 else:
                     self.fStall = False
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
-                        self.zustand[0] = 0
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
+                        self.state[0] = 0
                     else:
-                        self.zustand[0] = (len(self.befehl) - 1)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
-                        self.zustand[1] = 0
+                        self.state[0] = (len(self.command) - 1)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
+                        self.state[1] = 0
                     else:
-                        self.zustand[1] = (len(self.befehl) - 2)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
-                        self.zustand[2] = 0
+                        self.state[1] = (len(self.command) - 2)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
+                        self.state[2] = 0
                     else:
-                        self.zustand[2] = (len(self.befehl) - 3)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD") | (self.pipe.insFIFO[3] == 0)):
-                        self.zustand[3] = 0
+                        self.state[2] = (len(self.command) - 3)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD") | (self.pipe.insFIFO[3] == 0)):
+                        self.state[3] = 0
                     else:
-                        self.zustand[3] = (len(self.befehl) - 4)
-                    if ((((self.TL.OperationToAsm(self.pipe.insFIFO[4]))[0:3]) == "BAD") | (self.pipe.insFIFO[4] == 0)):
-                        self.zustand[4] = 0
+                        self.state[3] = (len(self.command) - 4)
+                    if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[4]))[0:3]) == "BAD") | (self.pipe.insFIFO[4] == 0)):
+                        self.state[4] = 0
                     else:
-                        self.zustand[4] = (len(self.befehl) - 5)
-                    self.takt += 1
+                        self.state[4] = (len(self.command) - 5)
+                    self.cycle += 1
             else:
-                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
-                        self.zustand[0] = 0
+                if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[0]))[0:3]) == "BAD") | (self.pipe.insFIFO[0] == 0)):
+                        self.state[0] = 0
                 else:
-                        self.zustand[0] = (len(self.befehl) - 1)
-                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
-                        self.zustand[1] = 0
+                        self.state[0] = (len(self.command) - 1)
+                if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[1]))[0:3]) == "BAD") | (self.pipe.insFIFO[1] == 0)):
+                        self.state[1] = 0
                 else:
-                        self.zustand[1] = (len(self.befehl) - 2)
-                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
-                        self.zustand[2] = 0
+                        self.state[1] = (len(self.command) - 2)
+                if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[2]))[0:3]) == "BAD") | (self.pipe.insFIFO[2] == 0)):
+                        self.state[2] = 0
                 else:
-                        self.zustand[2] = (len(self.befehl) - 3)
-                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD") | (self.pipe.insFIFO[3] == 0)):
-                        self.zustand[3] = 0
+                        self.state[2] = (len(self.command) - 3)
+                if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[3]))[0:3]) == "BAD") | (self.pipe.insFIFO[3] == 0)):
+                        self.state[3] = 0
                 else:
-                        self.zustand[3] = (len(self.befehl) - 4)
-                if ((((self.TL.OperationToAsm(self.pipe.insFIFO[4]))[0:3]) == "BAD") | (self.pipe.insFIFO[4] == 0)):
-                        self.zustand[4] = 0
+                        self.state[3] = (len(self.command) - 4)
+                if ((((self.disassambly.OperationToAsm(self.pipe.insFIFO[4]))[0:3]) == "BAD") | (self.pipe.insFIFO[4] == 0)):
+                        self.state[4] = 0
                 else:
-                        self.zustand[4] = (len(self.befehl) - 5)
-                self.takt += 1
+                        self.state[4] = (len(self.command) - 5)
+                self.cycle += 1
 

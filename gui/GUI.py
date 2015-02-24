@@ -37,10 +37,11 @@ def goNext():
 
 def goMore():
     num_steps = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert a Number:", 2)
-    for i in range (1,num_steps[0]):
+    for i in range (0,num_steps[0]):
         mySIM.doPipe(1)
         pipemod.updateContent()
         regmod.updateContent()
+        progmod.updateContent()
 
 def Run():
     #myStubSIM.NextStep(True)
