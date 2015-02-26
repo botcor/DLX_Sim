@@ -7,7 +7,7 @@ sys.path.append('./test')
 import logging
 from PySide.QtCore import *
 from PySide.QtGui import *
-from MainWindow1 import *
+from MainWindow import *
 from Models import *
 from Sim import *
 
@@ -49,9 +49,6 @@ def Run():
     #myStubSIM.NextStep(True)
     pipemod.updateContent()
 
-def quitApp():
-    app.quit()
-
 def changeMemSize():
     new_size = QtGui.QInputDialog.getInt( myMW, "Prompt", "Please insert the new memory size:", mySIM.pipe.storage.size)
     #mySIM.pipeline.storage.size = new_size
@@ -81,6 +78,9 @@ def reset():
         pipemod.setContentInitial()
         regmod.setContentInitial()
         memmod.setContentInitial()
+
+def quitApp():
+    app.quit()
 
 if __name__ == "__main__":
     # general stuff
