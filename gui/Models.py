@@ -24,6 +24,10 @@ class ProgramModel(Model):
         #update the model
         for i in range(0, len(self.items)-1):
             self.model.setItem(i ,self.items[i])
+    def setBreakpoint(self, index):
+        self.items[index].setBackground( QtGui.QBrush(QtGui.QColor(255,0,0), QtCore.Qt.SolidPattern) )
+        self.model.setItem(index ,self.items[index])
+        print('yes!')
 
 class PipelineModel(Model):
     def __init__(self,model_of, pSim):

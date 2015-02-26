@@ -74,6 +74,12 @@
       <verstretch>0</verstretch>
      </sizepolicy>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>41</width>
+      <height>0</height>
+     </size>
+    </property>
     <widget class="QListView" name="programview">
      <property name="geometry">
       <rect>
@@ -260,6 +266,9 @@
    <property name="text">
     <string>More Steps</string>
    </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
   </action>
   <action name="action_Run">
    <property name="text">
@@ -272,6 +281,9 @@
    </property>
    <property name="text">
     <string>Forwarding</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
   <action name="action_MemorySize">

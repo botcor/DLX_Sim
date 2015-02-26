@@ -4,12 +4,15 @@
 import sys
 sys.path.append('./src')
 sys.path.append('./test')
-from Stubs import *
+import logging
 from PySide.QtCore import *
 from PySide.QtGui import *
 from MainWindow1 import *
 from Models import *
 from Sim import *
+
+#create logger
+mylogger = logging.getLogger("Pipeline")
 
 class ControlMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -18,16 +21,15 @@ class ControlMainWindow(QtGui.QMainWindow):
         self.ui.setupUi(self)
         self.count = 0
 
-def setOpenFileName():
-    parent = None
-    filters = "All Files (*);;CSV (*.csv *.CSV)" # Only allow these file ext to be opened
+def OpenFile():
+    parent = myMW
+    filters = "DLX (*.dlx)" # Only allow these file ext to be opened
     title = "Load a Program"
     open_at = "/home/"
     fileName = QtGui.QFileDialog.getOpenFileName(parent, title, open_at, filters)
     mySIM.collectData(fileName[0])
     memmod.updateContent()
     progmod.setContentInitial()
-    return fileName
 
 def goNext():
     mySIM.doPipe(1)
@@ -36,7 +38,7 @@ def goNext():
     progmod.updateContent()
 
 def goMore():
-    num_steps = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert a Number:", 2)
+    num_steps = QtGui.QInputDialog.getInt( myMW, "Prompt", "Please insert a Number:", 2)
     for i in range (0,num_steps[0]):
         mySIM.doPipe(1)
         pipemod.updateContent()
@@ -51,32 +53,30 @@ def quitApp():
     app.quit()
 
 def changeMemSize():
-    new_size = QtGui.QInputDialog.getInt( mySW, "Prompt", "Please insert the new memory size:", mySIM.pipe.storage.size)
+    new_size = QtGui.QInputDialog.getInt( myMW, "Prompt", "Please insert the new memory size:", mySIM.pipe.storage.size)
     #mySIM.pipeline.storage.size = new_size
 
 def switchFWD(checked):
-    dialog = QtGui.QMessageBox(QtGui.QMessageBox.Information, "Info", "The DLX will be reset", QtGui.QMessageBox.Ok, mySW, 0)
-    answer = dialog.exec()
-    print(answer)
+    reset()
     if(checked == True):
         mySIM.pipe.fForwarding = True
     else:
         mySIM.pipe.fForwarding = False
-    print(mySIM.pipe.fForwarding)
+    mylogger.debug("Forwarding is %s", mySIM.pipe.fForwarding)
 
-def Reset():
-    dialog = QtGui.QMessageBox(QtGui.QMessageBox.Information, "Question", "Do you really want to reset the DLX?", QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel, mySW, 0)
+def reset():
+    dialog = QtGui.QMessageBox(QtGui.QMessageBox.Information, "Question", "Do you really want to reset the DLX?", QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel, myMW, 0)
     answer = dialog.exec()
     print(answer)
     if(answer == 1024):
         # actually reset the DLX
-        mySIM.pipe.ResetPipeline()
+        mySIM.pipe.reset()
         mySIM.storage.reset()
         # construct and connect the models to the views
-        progmod = ProgramModel(mySW.ui.programview, mySIM)
-        pipemod = PipelineModel(mySW.ui.pipeview, mySIM)
-        regmod = RegisterModel(mySW.ui.registerview, mySIM)
-        memmod = MemoryModel(mySW.ui.memoryview, mySIM)
+        progmod = ProgramModel(myMW.ui.programview, mySIM)
+        pipemod = PipelineModel(myMW.ui.pipeview, mySIM)
+        regmod = RegisterModel(myMW.ui.registerview, mySIM)
+        memmod = MemoryModel(myMW.ui.memoryview, mySIM)
         # setup the initial content of the models
         pipemod.setContentInitial()
         regmod.setContentInitial()
@@ -85,25 +85,25 @@ def Reset():
 if __name__ == "__main__":
     # general stuff
     app = QtGui.QApplication(sys.argv)
-    mySW = ControlMainWindow()
-    mySW.show()
+    myMW = ControlMainWindow()
+    myMW.show()
     mySIM = Simulator()
     # construct and connect the models to the views
-    progmod = ProgramModel(mySW.ui.programview, mySIM)
-    pipemod = PipelineModel(mySW.ui.pipeview, mySIM)
-    regmod = RegisterModel(mySW.ui.registerview, mySIM)
-    memmod = MemoryModel(mySW.ui.memoryview, mySIM)
+    progmod = ProgramModel(myMW.ui.programview, mySIM)
+    pipemod = PipelineModel(myMW.ui.pipeview, mySIM)
+    regmod = RegisterModel(myMW.ui.registerview, mySIM)
+    memmod = MemoryModel(myMW.ui.memoryview, mySIM)
     # setup the initial content of the models
     pipemod.setContentInitial()
     regmod.setContentInitial()
     memmod.setContentInitial()
     # connect the menu actions to the custom functions
-    mySW.ui.action_LoadProgram.triggered.connect(setOpenFileName)
-    mySW.ui.action_ResetDLX.triggered.connect(Reset)
-    mySW.ui.action_NextStep.triggered.connect(goNext)
-    mySW.ui.action_MoreSteps.triggered.connect(goMore)
-    mySW.ui.action_Run.triggered.connect(Run)
-    mySW.ui.action_Forwarding.toggled.connect(switchFWD)
-    mySW.ui.action_MemorySize.triggered.connect(changeMemSize)
+    myMW.ui.action_LoadProgram.triggered.connect(OpenFile)
+    myMW.ui.action_ResetDLX.triggered.connect(reset)
+    myMW.ui.action_NextStep.triggered.connect(goNext)
+    myMW.ui.action_MoreSteps.triggered.connect(goMore)
+    myMW.ui.action_Run.triggered.connect(Run)
+    myMW.ui.action_Forwarding.toggled.connect(switchFWD)
+    myMW.ui.action_MemorySize.triggered.connect(changeMemSize)
     sys.exit(app.exec_())
 

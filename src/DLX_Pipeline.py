@@ -587,7 +587,7 @@ class DLX_Pipeline:
         else:
             return 0
 
-    def ResetPipeline(self):
+    def reset(self):
         self.insFIFO = deque([BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)],5)
         # reset the Pipeline Registers
         self.PC.setVal(BitArray(uint=0, length=32))
