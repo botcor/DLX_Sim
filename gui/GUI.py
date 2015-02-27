@@ -67,8 +67,7 @@ def reset():
     print(answer)
     if(answer == 1024):
         # actually reset the DLX
-        mySIM.pipe.reset()
-        mySIM.storage.reset()
+        mySIM.reset()
         # construct and connect the models to the views
         progmod = ProgramModel(myMW.ui.programview, mySIM)
         pipemod = PipelineModel(myMW.ui.pipeview, mySIM)

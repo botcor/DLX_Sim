@@ -29,7 +29,7 @@ class Simulator:
         self.oldPC = 0
         
 
-    def resetSim(self):
+    def reset(self):
         self.pipe.reset()
         self.storage.reset()
         self.state = [0,0,0,0,0]
