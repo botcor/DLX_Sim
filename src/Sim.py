@@ -25,10 +25,21 @@ class Simulator:
         self.cycle = 0
         self.fStall = False
         self.disassambly = DLX_Disassembly()
-        self.newPC = 0
+        self.newPC = 4096
         self.oldPC = 0
-        self.x = 4096
+        
 
+    def resetSim(self):
+        self.pipe.reset()
+        self.storage.reset()
+        self.state = [0,0,0,0,0]
+        self.command = [0]
+        self.programView = []
+        self.cnt = 0
+        self.cycle = 0
+        self.fStall = False
+        self.newPC = 4096
+        self.oldPC = 0
 
     def collectData(self, filename):
     
@@ -186,4 +197,5 @@ class Simulator:
                 else:
                         self.state[4] = (len(self.command) - 5)
                 self.cycle += 1
+
 
