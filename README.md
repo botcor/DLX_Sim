@@ -1,13 +1,13 @@
-DLX_Sim
+﻿DLX_Sim
 =======
 
-Simulator for the DLX Pipeline written in Python
+Simulator für die DLX-Architektur geschrieben in Python.
 
 gui
 ====
-- GUI.py						Enthält die Klasse ControllMainWindow und die Implementierung verschiedener Steueroptionen z.B. die ausführung von Einzel- oder Mehrschritten.
+- GUI.py						Enthält die Klasse ControllMainWindow und die Implementierung verschiedener GUI-Aktionen z.B. die Ausführung von Einzel- oder Mehrschritten
 - MainWindow.py					Enthält die Klasse Ui_MainWindow.
-- mainwindow.ui				
+- mainwindow.ui	                Mit QtCreator erzeugte Datei. Das Hauptfenster.
 - mainwindow_alternativ.ui
 - Models.py						Enthält die Klassen Model, ProgramModel, PipelineModel, MemoryModel und RegisterModel.
 
@@ -35,10 +35,11 @@ test
 - UnitTestSim.py				Enthält die Klasse TestCasesSim und die Implementierung eines Tests des Simulators.
 - UnitTestReg.py				Enthält die Klasse TestCasesReg und die Implementierung eines Tests der DLX_Register.
 
-Ausführung des Programms
-========================
 
-Nach start des Programms kann im Menü DLX_Sim mit Load Program ein neues Programm in den Simulator geladen werden.
-Im Menüpunkt Simulator können nun mehrere oder einzelne Schritte ausgeführt werden. Um den Simulator zu resetten
+Ausführung und Verwendung des Programms
+=======================================
+
+Nach start des Programms kann im Menü 'DLX_Sim' mit 'Load Program' ein neues Programm in den Simulator geladen werden.
+Im Menüpunkt Simulator können nun mehrere oder einzelne Schritte ausgeführt werden. Um den Simulator zurückzusetzen
 befindet sich im Menüpunkt DLX_Sim die Funktion Reset DLX.
 
