@@ -19,22 +19,24 @@ class DLX_Speicher:
             self.storage[i] = BitArray(uint=0, length=8)
 
     def setB(self, adr, value):
-        self.storage[adr] = value
+        self.storage[adr] = BitArray(value)
 
     def setHW(self, adr, value):
         if adr % 2 == 0:
-            self.storage[adr] = value[0:8]
-            self.storage[adr +1] = value[8:16]
+            self.storage[adr] = BitArray(value[0:8])
+            self.storage[adr +1] = BitArray(value[8:16])
 
     def setW(self, adr, value):
         if adr % 4 == 0:
-            self.storage[adr] = value[0:8]
-            self.storage[adr +1] = value[8:16]
-            self.storage[adr +2] = value[16:24]
-            self.storage[adr +3] = value[24:32]
+            self.storage[adr] = BitArray(value[0:8])
+            self.storage[adr +1] = BitArray(value[8:16])
+            self.storage[adr +2] = BitArray(value[16:24])
+            self.storage[adr +3] = BitArray(value[24:32])
 
     def getB(self, adr):
-        return self.storage[adr]
+        x = BitArray(uint=0, length=8)
+        x[0:8] = self.storage[adr]
+        return x
 
     def getHW(self,adr):
         if adr % 2 == 0:

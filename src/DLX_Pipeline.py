@@ -90,13 +90,13 @@ class DLX_Pipeline:
         if (self.fJump == True):
             self.NPC.setVal( self.AO_2.getVal() )
             self.fTrap = False
-        
+
     def doID(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         mylogger.debug("ID FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
-        # save the opcode aside (not DLX specified)
+        # save the opcode aside
         __OP = BitArray( self.IR.getVal()[0:6], length=6 )
-        mylogger.critical("OP hat den Wert: %s %s", __OP, __OP.uint)
+        mylogger.debug("OP hat den Wert: %s %s", __OP, __OP.uint)
         # determine the Instruction Format
         # and dependent on that
             # get the registers from regbank
@@ -124,16 +124,16 @@ class DLX_Pipeline:
         # determine the kind of extension and extend the Imm value
         if ( __OP.uint == 0x08 or __OP.uint == 0x0A or ( __OP.uint >= 0x18 and __OP.uint <= 0x1D) or __OP.uint == 0x02 or __OP.uint == 0x03 or __OP.uint == 0x04 or __OP.uint == 0x05):
             # for ADDI,        SUBI,       SEQI, SNEI, SLTI, SGTI, SLEI, SGEI,          J, JAL,  BEQZ, BNEZ
-            mylogger.critical("Doing sign extension 1")
+            mylogger.debug("Doing sign extension 1")
             self.Imm.setVal( self.__extend(self.Imm.getVal() ) )
         elif ( __OP.uint == 0x0F or __OP.uint == 0x23 or __OP.uint == 0x20 or __OP.uint == 0x21 or __OP.uint == 0x2B or __OP.uint == 0x29 or __OP.uint == 0x28 ):
             # for LHI, LW, LB, LH, SW, SH, SB
-            mylogger.critical("Doing sign extension 2")
+            mylogger.debug("Doing sign extension 2")
             self.Imm.setVal( self.__extend(self.Imm.getVal() ) )
         elif not( __OP.uint == 0x14 or __OP.uint == 0x17 or __OP.uint == 0x16 or __OP.uint == 0x00 ):
             # excluding SLLI, SRAI, SRLI along with all R-Type Instructions
             # -->    for ADDUI, SUBUI, ANDI, ORI, XORI,    SEQUI, SNEUI, SLTUI, SGTUI, SLEUI, SGEUI,   LBU, LHU
-            mylogger.critical("Doing 0 extension")
+            mylogger.debug("Doing 0 extension")
             self.Imm.setVal( self.__extend0( self.Imm.getVal() ) )
 
         # forward the NPC Register to the EX stage
@@ -143,7 +143,7 @@ class DLX_Pipeline:
     def doEX(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         mylogger.debug("EX FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
-        # save the opcode aside (not DLX specified)
+        # save the opcode aside
         __IR = self.insFIFO[2]
         __OP = BitArray( __IR[0:6], length=6 )
         # determine Task by these rules:
@@ -225,7 +225,7 @@ class DLX_Pipeline:
                 #SGE
                 self.AO.setVal( self.alu.SGE(self.A.getVal(), self.B.getVal()) )
             else:
-                mylogger.debug("Fehler in doEX R-Type")
+                mylogger.critical("Fehler in doEX R-Type")
 
         elif ( __OP.uint <= 0x03 ):
             # J-Type
@@ -339,13 +339,13 @@ class DLX_Pipeline:
                 self.AO.setVal( self.alu.ADDU(self.A.getVal(), self.Imm.getVal()) )
                 self.DO.setVal( self.B.getVal() )
             else:
-                mylogger.debug("Fehler in doEX R-Type")
+                mylogger.critical("Fehler in doEX R-Type")
         return 0
 
     def doMEM(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         mylogger.debug("MEM FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
-        # save the opcode aside (not DLX specified)
+        # save the opcode aside
         __IR = self.insFIFO[3]
         mylogger.debug("insFIFO[3]: %s",self.insFIFO[3] )
         __OP = BitArray( __IR[0:6], length=6 )
@@ -400,7 +400,7 @@ class DLX_Pipeline:
     def doWB(self):
         mylogger.debug("do Function: %s",(inspect.stack()[0][3]) )
         mylogger.debug("WB FIFO: [0] %s, [1] %s, [2] %s, [3] %s, [4] %s", self.insFIFO[0], self.insFIFO[1], self.insFIFO[2], self.insFIFO[3], self.insFIFO[4])
-        # save the opcode aside (not DLX specified)
+        # save the opcode aside
         __IR = self.insFIFO[4]
         __OP = BitArray( __IR[0:6], length=6 )
         if ( __OP.uint == 0x00 ):
@@ -418,7 +418,7 @@ class DLX_Pipeline:
         return 0
 
     def detectDataHazard(self):
-        mylogger.critical("do Function: %s",(inspect.stack()[0][3]))
+        mylogger.debug("do Function: %s",(inspect.stack()[0][3]))
         if (self.fForwarding == True):
             __OP_ex = self.insFIFO[3][0:6]
             __OP_id = self.insFIFO[2][0:6]
@@ -440,7 +440,7 @@ class DLX_Pipeline:
             # I-Type
             __rd_ex = self.insFIFO[2][11:16].uint
         
-        mylogger.critical("detect Hazard RD_EX: %s", __rd_ex)
+        mylogger.debug("detect Hazard RD_EX: %s", __rd_ex)
 
         # determine the rd register in stage ID
         if ( __OP_id.uint == 0x00 ):
@@ -453,7 +453,7 @@ class DLX_Pipeline:
             # I-Type
             __rd_id = self.insFIFO[1][11:16].uint
 
-        mylogger.critical("detect Hazard RD_ID: %s", __rd_id)
+        mylogger.debug("detect Hazard RD_ID: %s", __rd_id)
 
         # determine the source registers in stage IF
         if ( __OP_if.uint == 0x00 ):
@@ -469,8 +469,8 @@ class DLX_Pipeline:
             __rs1_if = self.insFIFO[0][6:11].uint
             __rs2_if = 0xFF
 
-        mylogger.critical("detect Hazard RS1_IF: %s", __rs1_if)
-        mylogger.critical("detect Hazard RS2_IF: %s", __rs2_if)
+        mylogger.debug("detect Hazard RS1_IF: %s", __rs1_if)
+        mylogger.debug("detect Hazard RS2_IF: %s", __rs2_if)
         
         # checking for hazards
         self.fDataHazard = False
@@ -487,7 +487,7 @@ class DLX_Pipeline:
                 self.fDataHazard = True
                 # do two stalls
                 self.cStallCnt = 2
-                mylogger.debug("DataHazard: ID -> IF")
+                mylogger.critical("DataHazard: ID -> IF")
         elif( __rd_id == __rs2_if and __rs2_if > 0):
             if(self.fForwarding == True):
                 self.fForwardEX_ID_B = True
@@ -496,7 +496,7 @@ class DLX_Pipeline:
                 self.fDataHazard = True
                 # do two stalls
                 self.cStallCnt = 2
-                mylogger.debug("DataHazard: ID -> IF")
+                mylogger.critical("DataHazard: ID -> IF")
         elif( __rd_ex ==  __rs1_if and __rs1_if > 0):
             if(self.fForwarding == True):
                 self.fForwardMEM_ID_A = True
@@ -505,7 +505,7 @@ class DLX_Pipeline:
                 self.fDataHazard = True
                 # do one stall
                 self.cStallCnt = 1
-                mylogger.debug("DataHazard: EX -> IF")
+                mylogger.critical("DataHazard: EX -> IF")
         elif ( __rd_ex == __rs2_if and __rs2_if > 0):
             if(self.fForwarding == True):
                 self.fForwardMEM_ID_B = True
@@ -514,7 +514,7 @@ class DLX_Pipeline:
                 self.fDataHazard = True
                 # do one stall
                 self.cStallCnt = 1
-                mylogger.debug("DataHazard: EX -> IF")
+                mylogger.critical("DataHazard: EX -> IF")
     
     def insertBubbleID(self):
         mylogger.debug("Bubble ID")
@@ -587,7 +587,7 @@ class DLX_Pipeline:
         else:
             return 0
 
-    def ResetPipeline(self):
+    def reset(self):
         self.insFIFO = deque([BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32), BitArray(uint=0, length=32)],5)
         # reset the Pipeline Registers
         self.PC.setVal(BitArray(uint=0, length=32))
@@ -610,4 +610,3 @@ class DLX_Pipeline:
         self.fTrap = False
         self.cStallCnt = 0
         
-
