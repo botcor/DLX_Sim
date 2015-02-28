@@ -15,11 +15,11 @@ class TestCasesSim(unittest.TestCase):
         cls.sim = Simulator()
         return super().setUpClass()
 
-    #def test_sim(self):
-        #mylogger.info("TestCase: test_sim START")
-        #self.sim.collectData("simtest.dlx")
-        #self.sim.doPipe(20)
-        #mylogger.info("TestCase: test_sim SUCCESSFUL")
+    def test_sim(self):
+        mylogger.info("TestCase: test_sim START")
+        self.sim.collectData("simtest.dlx")
+        self.sim.doPipe(20)
+        mylogger.info("TestCase: test_sim SUCCESSFUL")
 
     def test_sim_haz(self):
         mylogger.info("TestCase: test_sim START")

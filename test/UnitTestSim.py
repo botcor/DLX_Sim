@@ -28,18 +28,6 @@ class TestCasesSim(unittest.TestCase):
         mylogger.info("TestCase: test_read SUCCESSFUL")
 
 
-
-    def test_read2(self):
-        mylogger.info("TestCase: test_read2 START")
-        self.sim.collectData("Bubble.dlx")
-
-        self.assertEqual(self.sim.storage.getW(0).hex, '8c0a0058' , "Storage has incorrect value")
-        self.assertEqual(self.sim.storage.getW(44).hex, '0041a82a' , "Storage has incorrect value")
-        self.assertEqual(self.sim.storage.getW(60).hex, '0064a82b' , "Storage has incorrect value")
-        self.assertEqual(self.sim.storage.getW(84).hex, '44000000' , "Storage has incorrect value")
-        mylogger.info("TestCase: test_read2 SUCCESSFUL")
-
-
     @classmethod
     def tearDownClass(cls):
         mylogger.info("----------Unit Test Simulator TearDown----------\n")
