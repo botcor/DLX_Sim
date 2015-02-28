@@ -91,10 +91,7 @@ class Simulator:
 
         mylogger.debug("Funktion %s  Datei: %s wurde in den Speicher geschrieben", (inspect.stack()[0][3]), filename)
 
-    def doPipe(self, number):
-        self.num = number
-        self.cycleEnd = (self.cycle + self.num)
-        while(self.cycle < self.cycleEnd):
+    def doPipe(self):
             self.pipe.doPipeNext()
             self.oldPC = self.newPC
             self.newPC = self.pipe.PC.getVal()

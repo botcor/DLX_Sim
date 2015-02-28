@@ -32,7 +32,7 @@ def OpenFile():
     progmod.setContentInitial()
 
 def goNext():
-    mySIM.doPipe(1)
+    mySIM.doPipe()
     pipemod.updateContent()
     regmod.updateContent()
     progmod.updateContent()
@@ -40,7 +40,7 @@ def goNext():
 def goMore():
     num_steps = QtGui.QInputDialog.getInt( myMW, "Prompt", "Please insert a Number:", 2)
     for i in range (0,num_steps[0]):
-        mySIM.doPipe(1)
+        mySIM.doPipe()
         pipemod.updateContent()
         regmod.updateContent()
         progmod.updateContent()
